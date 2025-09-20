@@ -226,6 +226,55 @@ __global__ void computeIntersections(
     }
 }
 
+__global__ void shadeBSDFMaterial(
+    int iter,
+    int num_paths,
+    ShadeableIntersection* shadeableIntersections,
+    PathSegment* pathSegments,
+    Material* materials)
+{
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < num_paths)
+    {
+        ShadeableIntersection intersection = shadeableIntersections[idx];
+        if (intersection.t > 0.0f)
+        {
+            thrust::default_random_engine rng = makeSeededRandomEngine(iter, idx, 0);
+            thrust::uniform_real_distribution<float> u01(0, 1);
+
+            Material material = materials[intersection.materialId];
+            glm::vec3 materialColor = material.color;
+
+            // If the material indicates that the object was a light, "light" the ray
+            if (material.emittance > 0.0f) {
+                pathSegments[idx].color *= (materialColor * material.emittance);
+
+                // want to stop if light source 
+                pathSegments[idx].remainingBounces = 0;
+            }
+            
+            else {
+                // calculating intersection pt 
+                // t (first intersection of ray in scene) * dir of ray + origin of ray
+                // tldr; where along ray is the hit/ intersection
+
+                glm::vec3 intersectionPt = pathSegments[idx].ray.origin + pathSegments[idx].ray.direction * intersection.t;
+
+                scatterRay(pathSegments[idx], intersectionPt, intersection.surfaceNormal, material, rng);
+                pathSegments[idx].color *= materialColor;
+                pathSegments[idx].remainingBounces -= 1;
+            }
+            // If there was no intersection, color the ray black.
+            // Lots of renderers use 4 channel color, RGBA, where A = alpha, often
+            // used for opacity, in which case they can indicate "no opacity".
+            // This can be useful for post-processing and image compositing.
+        }
+        else {
+            pathSegments[idx].color = glm::vec3(0.0f);
+        }
+    }
+}
+
 // LOOK: "fake" shader demonstrating what you might do with the info in
 // a ShadeableIntersection, as well as how to use thrust's random number
 // generator. Observe that since the thrust random number generator basically
@@ -292,6 +341,14 @@ __global__ void finalGather(int nPaths, glm::vec3* image, PathSegment* iteration
     }
 }
 
+// https://nvidia.github.io/cccl/thrust/api/group__stream__compaction_1gaf01d45b30fecba794afae065d625f94f.html
+struct GetBounceNum
+{
+    __host__ __device__ bool operator() (const PathSegment& p) {
+        return p.remainingBounces == 0; 
+    }
+};
+
 /**
  * Wrapper for the __global__ call that sets up the kernel calls and does a ton
  * of memory management
@@ -310,6 +367,9 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
     // 1D block for path tracing
     const int blockSize1d = 128;
+
+    // max depth
+    int maxDepth = 10;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -381,13 +441,28 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         // TODO: compare between directly shading the path segments and shading
         // path segments that have been reshuffled to be contiguous in memory.
 
-        shadeFakeMaterial<<<numblocksPathSegmentTracing, blockSize1d>>>(
+        shadeBSDFMaterial<<<numblocksPathSegmentTracing, blockSize1d>>>(
             iter,
             num_paths,
             dev_intersections,
             dev_paths,
             dev_materials
         );
+
+        // stream compact based on remaining bounces of each ray
+        
+        //if (depth >= maxDepth) {
+        //    iterationComplete = true; // TODO: should be based off stream compaction results.
+        //}
+
+   /*     PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
+        num_paths = dev_paths_updated_end - dev_paths;
+
+        if (num_paths == 0)
+        {
+            iterationComplete = true;
+        }*/
+
         iterationComplete = true; // TODO: should be based off stream compaction results.
 
         if (guiData != NULL)
