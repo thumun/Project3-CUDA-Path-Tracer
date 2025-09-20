@@ -250,7 +250,7 @@ __global__ void shadeBSDFMaterial(
                 pathSegments[idx].color *= (materialColor * material.emittance);
 
                 // want to stop if light source 
-                pathSegments[idx].remainingBounces = 0;
+               // pathSegments[idx].remainingBounces = 0;
             }
             
             else {
@@ -258,11 +258,17 @@ __global__ void shadeBSDFMaterial(
                 // t (first intersection of ray in scene) * dir of ray + origin of ray
                 // tldr; where along ray is the hit/ intersection
 
-                glm::vec3 intersectionPt = pathSegments[idx].ray.origin + pathSegments[idx].ray.direction * intersection.t;
+                glm::vec3 intersectionPt = pathSegments[idx].ray.origin + (pathSegments[idx].ray.direction * intersection.t);
 
                 scatterRay(pathSegments[idx], intersectionPt, intersection.surfaceNormal, material, rng);
-                pathSegments[idx].color *= materialColor;
-                pathSegments[idx].remainingBounces -= 1;
+                //pathSegments[idx].color *= materialColor;
+
+                if (pathSegments[idx].remainingBounces > 0) {
+                    pathSegments[idx].remainingBounces -= 1;
+                }
+                else {
+                    pathSegments[idx].remainingBounces = 0;
+                }
             }
             // If there was no intersection, color the ray black.
             // Lots of renderers use 4 channel color, RGBA, where A = alpha, often
@@ -271,6 +277,7 @@ __global__ void shadeBSDFMaterial(
         }
         else {
             pathSegments[idx].color = glm::vec3(0.0f);
+            pathSegments[idx].remainingBounces = 0;
         }
     }
 }
@@ -369,7 +376,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
     const int blockSize1d = 128;
 
     // max depth
-    int maxDepth = 10;
+    int maxDepth = 4;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -449,21 +456,23 @@ void pathtrace(uchar4* pbo, int frame, int iter)
             dev_materials
         );
 
+        cudaDeviceSynchronize();
+
         // stream compact based on remaining bounces of each ray
         
         //if (depth >= maxDepth) {
         //    iterationComplete = true; // TODO: should be based off stream compaction results.
         //}
 
-   /*     PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
+        PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
         num_paths = dev_paths_updated_end - dev_paths;
 
-        if (num_paths == 0)
+        if (num_paths <= 0 || depth >= maxDepth)
         {
             iterationComplete = true;
-        }*/
+        }
 
-        iterationComplete = true; // TODO: should be based off stream compaction results.
+        // iterationComplete = true; // TODO: should be based off stream compaction results.
 
         if (guiData != NULL)
         {

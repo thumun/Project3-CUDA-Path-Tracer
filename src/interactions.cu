@@ -56,5 +56,7 @@ __host__ __device__ void scatterRay(
     // calculateRandomDirectionInHemisphere defined above.
 
     pathSegment.ray.direction = calculateRandomDirectionInHemisphere(normal, rng);
-    pathSegment.ray.origin = intersect;
+    // prevent self intersection -> move pt along normal by a tiny bit
+    pathSegment.ray.origin = intersect + (normal * EPSILON);
+    pathSegment.color *= m.color;
 }
