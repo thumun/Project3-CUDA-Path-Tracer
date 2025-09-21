@@ -464,6 +464,13 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         //    iterationComplete = true; // TODO: should be based off stream compaction results.
         //}
 
+
+        PathSegment* dev_paths_updated_end_partition = thrust::stable_partition(thrust::device,
+            dev_paths,
+            dev_paths + num_paths,
+            GetBounceNum());
+
+        
         PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
         num_paths = dev_paths_updated_end - dev_paths;
 
