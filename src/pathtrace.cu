@@ -377,7 +377,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
     const int blockSize1d = 128;
 
     // max depth
-    int maxDepth = 4;
+    int maxDepth = 10;
 
     ///////////////////////////////////////////////////////////////////////////
 
