@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cuda.h>
 #include <cmath>
+#include <thrust/partition.h>
 #include <thrust/execution_policy.h>
 #include <thrust/random.h>
 #include <thrust/remove.h>
@@ -352,7 +353,7 @@ __global__ void finalGather(int nPaths, glm::vec3* image, PathSegment* iteration
 struct GetBounceNum
 {
     __host__ __device__ bool operator() (const PathSegment& p) {
-        return p.remainingBounces == 0; 
+        return p.remainingBounces > 0;
     }
 };
 
@@ -465,13 +466,13 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         //}
 
 
-        PathSegment* dev_paths_updated_end_partition = thrust::stable_partition(thrust::device,
+        PathSegment* dev_paths_updated_end = thrust::stable_partition(thrust::device,
             dev_paths,
             dev_paths + num_paths,
             GetBounceNum());
 
         
-        PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
+        //PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
         num_paths = dev_paths_updated_end - dev_paths;
 
         if (num_paths <= 0 || depth >= maxDepth)
