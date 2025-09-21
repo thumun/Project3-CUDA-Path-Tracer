@@ -251,7 +251,7 @@ __global__ void shadeBSDFMaterial(
                 pathSegments[idx].color *= (materialColor * material.emittance);
 
                 // want to stop if light source 
-               // pathSegments[idx].remainingBounces = 0;
+                pathSegments[idx].remainingBounces = 0;
             }
             
             else {
@@ -490,7 +490,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
     // Assemble this iteration and apply it to the image
     dim3 numBlocksPixels = (pixelcount + blockSize1d - 1) / blockSize1d;
-    finalGather<<<numBlocksPixels, blockSize1d>>>(num_paths, dev_image, dev_paths);
+    finalGather<<<numBlocksPixels, blockSize1d>>>(pixelcount, dev_image, dev_paths);
 
     ///////////////////////////////////////////////////////////////////////////
 
