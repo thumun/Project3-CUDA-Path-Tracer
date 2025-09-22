@@ -44,6 +44,13 @@ __host__ __device__ glm::vec3 calculateRandomDirectionInHemisphere(
         + sin(around) * over * perpendicularDirection2;
 }
 
+//__host__ __device__ glm::vec3 calculateCosineDirectionInHemisphere(
+//    glm::vec3 normal,
+//    thrust::default_random_engine& rng)
+//{
+//
+//}
+
 __host__ __device__ void scatterRay(
     PathSegment & pathSegment,
     glm::vec3 intersect,

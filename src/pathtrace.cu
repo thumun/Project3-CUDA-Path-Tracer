@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cuda.h>
 #include <cmath>
+#include <thrust/sort.h>
 #include <thrust/partition.h>
 #include <thrust/execution_policy.h>
 #include <thrust/random.h>
@@ -253,7 +254,6 @@ __global__ void shadeBSDFMaterial(
                 // want to stop if light source 
                 pathSegments[idx].remainingBounces = 0;
             }
-            
             else {
                 // calculating intersection pt 
                 // t (first intersection of ray in scene) * dir of ray + origin of ray
@@ -357,6 +357,16 @@ struct GetBounceNum
     }
 };
 
+// https://nvidia.github.io/cccl/thrust/api/group__sorting_1ga667333ee2e067bb7da3fb1b8ab6d348c.html
+// https://en.cppreference.com/w/cpp/algorithm/sort.html
+// lesser than comparison
+struct SortMaterials
+{
+    __host__ __device__ bool operator() (const ShadeableIntersection& p1, const ShadeableIntersection& p2) {
+        return p1.materialId < p2.materialId;
+    }
+};
+
 /**
  * Wrapper for the __global__ call that sets up the kernel calls and does a ton
  * of memory management
@@ -448,6 +458,13 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         // materials you have in the scenefile.
         // TODO: compare between directly shading the path segments and shading
         // path segments that have been reshuffled to be contiguous in memory.
+
+        // slides -- do this before shading & sampling
+        // make this toggle-able
+        thrust::stable_sort_by_key(thrust::device, dev_intersections,
+            dev_intersections + num_paths,
+            dev_paths,
+            SortMaterials());
 
         shadeBSDFMaterial<<<numblocksPathSegmentTracing, blockSize1d>>>(
             iter,
