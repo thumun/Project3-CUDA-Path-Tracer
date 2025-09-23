@@ -18,8 +18,9 @@
 class GuiDataContainer
 {
 public:
-    GuiDataContainer() : TracedDepth(0) {}
+    GuiDataContainer() : TracedDepth(0), toggleMaterialSort(false) {}
     int TracedDepth;
+    bool toggleMaterialSort;
 };
 
 namespace utilityCore

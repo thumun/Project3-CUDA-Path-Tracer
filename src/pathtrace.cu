@@ -460,11 +460,16 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         // path segments that have been reshuffled to be contiguous in memory.
 
         // slides -- do this before shading & sampling
-        // make this toggle-able
-        thrust::stable_sort_by_key(thrust::device, dev_intersections,
-            dev_intersections + num_paths,
-            dev_paths,
-            SortMaterials());
+        
+        if (guiData != NULL)
+        {
+            if (guiData->toggleMaterialSort) {
+                thrust::stable_sort_by_key(thrust::device, dev_intersections,
+                    dev_intersections + num_paths,
+                    dev_paths,
+                    SortMaterials());
+            }
+        }
 
         shadeBSDFMaterial<<<numblocksPathSegmentTracing, blockSize1d>>>(
             iter,
