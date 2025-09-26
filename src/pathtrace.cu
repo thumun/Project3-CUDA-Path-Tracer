@@ -145,27 +145,39 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
         int index = x + (y * cam.resolution.x);
         PathSegment& segment = pathSegments[index];
 
-        // antialiasing by jittering the ray
-        thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces);
-        thrust::uniform_real_distribution<float> lens(-0.15, 0.15);
+        if (false) {
+            // antialiasing by jittering the ray
+            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces);
+            thrust::uniform_real_distribution<float> lens(-0.15, 0.15);
 
-        segment.ray.origin = cam.position;
-        segment.ray.origin.x += lens(rng);
-        segment.ray.origin.y += lens(rng);
+            segment.ray.origin = cam.position;
+            segment.ray.origin.x += lens(rng);
+            segment.ray.origin.y += lens(rng);
 
-        segment.color = glm::vec3(1.0f, 1.0f, 1.0f);
+            segment.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-        // antialiasing by jittering the ray
-        thrust::uniform_real_distribution<float> u01x(0.0, cam.pixelLength.x);
-        thrust::uniform_real_distribution<float> u01y(0.0, cam.pixelLength.y);
+            // antialiasing by jittering the ray
+            thrust::uniform_real_distribution<float> u01x(0.0, cam.pixelLength.x);
+            thrust::uniform_real_distribution<float> u01y(0.0, cam.pixelLength.y);
 
-        float shiftRight = u01x(rng) - cam.pixelLength.x * 0.5f;
-        float shiftUp = u01y(rng) - cam.pixelLength.y * 0.5f;
+            float shiftRight = u01x(rng) - cam.pixelLength.x * 0.5f;
+            float shiftUp = u01y(rng) - cam.pixelLength.y * 0.5f;
 
-        segment.ray.direction = glm::normalize(cam.view
-            - cam.right * cam.pixelLength.x * ((float)x + shiftRight - (float)cam.resolution.x * 0.5f)
-            - cam.up * cam.pixelLength.y * ((float)y + shiftUp - (float)cam.resolution.y * 0.5f)
-        );
+            segment.ray.direction = glm::normalize(cam.view
+                - cam.right * cam.pixelLength.x * ((float)x + shiftRight - (float)cam.resolution.x * 0.5f)
+                - cam.up * cam.pixelLength.y * ((float)y + shiftUp - (float)cam.resolution.y * 0.5f)
+            );
+        }
+        else {
+            segment.ray.origin = cam.position;
+
+            segment.color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+            segment.ray.direction = glm::normalize(cam.view
+                - cam.right * cam.pixelLength.x * ((float)x - (float)cam.resolution.x * 0.5f)
+                - cam.up * cam.pixelLength.y * ((float)y - (float)cam.resolution.y * 0.5f)
+            );
+        }
 
         segment.pixelIndex = index;
         segment.remainingBounces = traceDepth;
@@ -406,7 +418,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
     const int blockSize1d = 128;
 
     // max depth
-    int maxDepth = 1;
+    int maxDepth = 4;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -490,7 +502,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
             }
         }
 
-        shadeFakeMaterial<<<numblocksPathSegmentTracing, blockSize1d>>>(
+        shadeBSDFMaterial<<<numblocksPathSegmentTracing, blockSize1d>>>(
             iter,
             num_paths,
             dev_intersections,

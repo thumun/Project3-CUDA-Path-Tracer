@@ -62,8 +62,31 @@ __host__ __device__ void scatterRay(
     // A basic implementation of pure-diffuse shading will just call the
     // calculateRandomDirectionInHemisphere defined above.
 
-    pathSegment.ray.direction = calculateRandomDirectionInHemisphere(normal, rng);
-    // prevent self intersection -> move pt along normal by a tiny bit
-    pathSegment.ray.origin = intersect + (normal * EPSILON);
-    pathSegment.color *= m.color;
+    if (m.hasReflective > 0.0f) {
+        pathSegment.ray.direction = pathSegment.ray.direction - 2 * glm::dot(pathSegment.ray.direction, normal) * normal;
+        pathSegment.ray.origin = intersect + (normal * EPSILON);
+        pathSegment.color *= m.color;
+    }
+    else if (m.hasRefractive > 0.0f) {
+        /*
+        float refractiveIndxRatio = 1.0f / m.indexOfRefraction;
+
+        glm::vec3 unitRay = glm::normalize(pathSegment.ray.direction);
+
+        float cos_theta = std::fmin(glm::dot(-unitRay, normal), 1.0);
+        glm::vec3 r_out_perp = refractiveIndxRatio * (unitRay + cos_theta * normal);
+        glm::vec3 r_out_parallel = -1 * std::sqrt(std::fabs(1.0f - glm::length(r_out_perp) * glm::length(r_out_perp))) * normal;
+        pathSegment.ray.direction = r_out_perp + r_out_parallel;
+        */
+        pathSegment.ray.direction = calculateRandomDirectionInHemisphere(normal, rng);
+        // prevent self intersection -> move pt along normal by a tiny bit
+        pathSegment.ray.origin = intersect + (normal * EPSILON);
+        pathSegment.color *= m.color;
+    }
+    else {
+        pathSegment.ray.direction = calculateRandomDirectionInHemisphere(normal, rng);
+        // prevent self intersection -> move pt along normal by a tiny bit
+        pathSegment.ray.origin = intersect + (normal * EPSILON);
+        pathSegment.color *= m.color;
+    }
 }

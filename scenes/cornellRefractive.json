@@ -34,6 +34,12 @@
             "RGB":[0.35, 0.35, 0.85],
             "ROUGHNESS":0.0,
             "REFRACTIVE_INDEX":1.5
+        },
+        "mirror":
+        {
+            "TYPE":"Reflective",
+            "RGB":[0.98, 0.98, 0.98],
+            "ROUGHNESS":0.0
         }
     },
     "Camera":
@@ -93,8 +99,15 @@
         },
         {
             "TYPE":"sphere",
-            "MATERIAL":"specular_white",
+            "MATERIAL":"glass_blue",
             "TRANS":[-1.0,4.0,-1.0],
+            "ROTAT":[0.0,0.0,0.0],
+            "SCALE":[3.0,3.0,3.0]
+        },
+        {
+            "TYPE":"sphere",
+            "MATERIAL":"mirror",
+            "TRANS":[2.0,4.0,3.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[3.0,3.0,3.0]
         }
