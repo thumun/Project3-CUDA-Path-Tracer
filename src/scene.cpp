@@ -47,30 +47,33 @@ void Scene::loadFromJSON(const std::string& jsonName)
         {
             const auto& col = p["RGB"];
             newMaterial.color = glm::vec3(col[0], col[1], col[2]);
+            newMaterial.hasReflective = 0.0f;
+            newMaterial.hasRefractive = 0.0f;
         }
         else if (p["TYPE"] == "Emitting")
         {
             const auto& col = p["RGB"];
             newMaterial.color = glm::vec3(col[0], col[1], col[2]);
             newMaterial.emittance = p["EMITTANCE"];
+            newMaterial.hasReflective = 0.0f;
+            newMaterial.hasRefractive = 0.0f;
         }
         else if (p["TYPE"] == "Specular")
         {
             const auto& col = p["RGB"];
+            float roughness = p["ROUGHNESS"];
             newMaterial.color = glm::vec3(col[0], col[1], col[2]);
+            newMaterial.hasReflective = 1.0f - roughness;
+            newMaterial.hasRefractive = 0.0f;
         }
-        else if (p["TYPE"] == "Refractive")
+        else if (p["TYPE"] == "Transmissive")
         {
             const auto& col = p["RGB"];
+            float roughness = p["ROUGHNESS"];
             newMaterial.color = glm::vec3(col[0], col[1], col[2]);
-            newMaterial.hasRefractive = 1.0f;
-            newMaterial.indexOfRefraction = p["REFRACTIVE_INDEX"];
-        }
-        else if (p["TYPE"] == "Reflective")
-        {
-            const auto& col = p["RGB"];
-            newMaterial.color = glm::vec3(col[0], col[1], col[2]);
-            newMaterial.hasReflective = 1.0f;
+            newMaterial.hasReflective = 1.0f - roughness;
+            newMaterial.hasRefractive = p["TRANSMISSIVITY"];
+            newMaterial.indexOfRefraction = p["IOR"];
         }
         MatNameToID[name] = materials.size();
         materials.emplace_back(newMaterial);
@@ -117,6 +120,7 @@ void Scene::loadFromJSON(const std::string& jsonName)
     camera.position = glm::vec3(pos[0], pos[1], pos[2]);
     camera.lookAt = glm::vec3(lookat[0], lookat[1], lookat[2]);
     camera.up = glm::vec3(up[0], up[1], up[2]);
+    camera.lensDiameter = cameraData["LENSDIAMETER"];
 
     //calculate fov based on resolution
     float yscaled = tan(fovy * (PI / 180));

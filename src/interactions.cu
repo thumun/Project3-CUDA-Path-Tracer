@@ -44,13 +44,6 @@ __host__ __device__ glm::vec3 calculateRandomDirectionInHemisphere(
         + sin(around) * over * perpendicularDirection2;
 }
 
-//__host__ __device__ glm::vec3 calculateCosineDirectionInHemisphere(
-//    glm::vec3 normal,
-//    thrust::default_random_engine& rng)
-//{
-//
-//}
-
 __host__ __device__ void scatterRay(
     PathSegment & pathSegment,
     glm::vec3 intersect,
@@ -62,31 +55,36 @@ __host__ __device__ void scatterRay(
     // A basic implementation of pure-diffuse shading will just call the
     // calculateRandomDirectionInHemisphere defined above.
 
-    if (m.hasReflective > 0.0f) {
-        pathSegment.ray.direction = pathSegment.ray.direction - 2 * glm::dot(pathSegment.ray.direction, normal) * normal;
-        pathSegment.ray.origin = intersect + (normal * EPSILON);
-        pathSegment.color *= m.color;
+    // want to use random in order to make sure random rays don't 
+    // refract/reflect
+    thrust::uniform_real_distribution<float> u01(0, 1);
+    float rndRay = u01(rng);
+
+    if (rndRay < m.hasRefractive) {
+        float cos_theta = std::fmin(glm::dot(-glm::normalize(pathSegment.ray.direction), normal), 1.0f);
+        float sin_theta = std::sqrt(1.0f - cos_theta * cos_theta);
+        float ior = cos_theta > 0 ? (1.0f / m.indexOfRefraction) : m.indexOfRefraction;
+
+        //Schlick's approximation
+        float r0 = (1 - ior) / (1 + ior);
+        r0 = r0 * r0;
+        float reflectance = r0 + (1 - r0) * std::pow((1 - cos_theta), 5);
+
+        //total reflection
+        if (rndRay < reflectance || ior * sin_theta > 1) {
+            pathSegment.ray.direction = glm::reflect(pathSegment.ray.direction, normal);
+        }
+        else {
+            pathSegment.ray.direction = glm::refract(pathSegment.ray.direction, normal, ior);
+        }
     }
-    else if (m.hasRefractive > 0.0f) {
-        /*
-        float refractiveIndxRatio = 1.0f / m.indexOfRefraction;
-
-        glm::vec3 unitRay = glm::normalize(pathSegment.ray.direction);
-
-        float cos_theta = std::fmin(glm::dot(-unitRay, normal), 1.0);
-        glm::vec3 r_out_perp = refractiveIndxRatio * (unitRay + cos_theta * normal);
-        glm::vec3 r_out_parallel = -1 * std::sqrt(std::fabs(1.0f - glm::length(r_out_perp) * glm::length(r_out_perp))) * normal;
-        pathSegment.ray.direction = r_out_perp + r_out_parallel;
-        */
-        pathSegment.ray.direction = calculateRandomDirectionInHemisphere(normal, rng);
-        // prevent self intersection -> move pt along normal by a tiny bit
-        pathSegment.ray.origin = intersect + (normal * EPSILON);
-        pathSegment.color *= m.color;
+    else if (rndRay < m.hasReflective) {
+        pathSegment.ray.direction = glm::reflect(pathSegment.ray.direction, normal);
     }
     else {
         pathSegment.ray.direction = calculateRandomDirectionInHemisphere(normal, rng);
         // prevent self intersection -> move pt along normal by a tiny bit
         pathSegment.ray.origin = intersect + (normal * EPSILON);
-        pathSegment.color *= m.color;
+        //pathSegment.color *= m.color;
     }
 }

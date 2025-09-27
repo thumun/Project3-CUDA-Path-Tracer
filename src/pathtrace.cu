@@ -138,6 +138,9 @@ void pathtraceFree()
 */
 __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, PathSegment* pathSegments)
 {
+    float dof = false;
+    float aa = false;
+
     int x = (blockIdx.x * blockDim.x) + threadIdx.x;
     int y = (blockIdx.y * blockDim.y) + threadIdx.y;
 
@@ -145,7 +148,14 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
         int index = x + (y * cam.resolution.x);
         PathSegment& segment = pathSegments[index];
 
-        if (false) {
+        segment.ray.origin = cam.position;
+        segment.color = glm::vec3(1.0f, 1.0f, 1.0f);
+        segment.ray.direction = glm::normalize(cam.view
+            - cam.right * cam.pixelLength.x * ((float)x - (float)cam.resolution.x * 0.5f)
+            - cam.up * cam.pixelLength.y * ((float)y - (float)cam.resolution.y * 0.5f)
+        );
+
+        if (dof) {
             // antialiasing by jittering the ray
             thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces);
             thrust::uniform_real_distribution<float> lens(-0.15, 0.15);
@@ -153,10 +163,10 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
             segment.ray.origin = cam.position;
             segment.ray.origin.x += lens(rng);
             segment.ray.origin.y += lens(rng);
-
-            segment.color = glm::vec3(1.0f, 1.0f, 1.0f);
-
+        }
+        if (aa) {
             // antialiasing by jittering the ray
+            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces);
             thrust::uniform_real_distribution<float> u01x(0.0, cam.pixelLength.x);
             thrust::uniform_real_distribution<float> u01y(0.0, cam.pixelLength.y);
 
@@ -166,16 +176,6 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
             segment.ray.direction = glm::normalize(cam.view
                 - cam.right * cam.pixelLength.x * ((float)x + shiftRight - (float)cam.resolution.x * 0.5f)
                 - cam.up * cam.pixelLength.y * ((float)y + shiftUp - (float)cam.resolution.y * 0.5f)
-            );
-        }
-        else {
-            segment.ray.origin = cam.position;
-
-            segment.color = glm::vec3(1.0f, 1.0f, 1.0f);
-
-            segment.ray.direction = glm::normalize(cam.view
-                - cam.right * cam.pixelLength.x * ((float)x - (float)cam.resolution.x * 0.5f)
-                - cam.up * cam.pixelLength.y * ((float)y - (float)cam.resolution.y * 0.5f)
             );
         }
 
@@ -292,8 +292,8 @@ __global__ void shadeBSDFMaterial(
 
                 glm::vec3 intersectionPt = pathSegments[idx].ray.origin + (pathSegments[idx].ray.direction * intersection.t);
 
+                pathSegments[idx].color *= materialColor;
                 scatterRay(pathSegments[idx], intersectionPt, intersection.surfaceNormal, material, rng);
-                //pathSegments[idx].color *= materialColor;
 
                 if (pathSegments[idx].remainingBounces > 0) {
                     pathSegments[idx].remainingBounces -= 1;
@@ -528,7 +528,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         //PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
         num_paths = dev_paths_updated_end - dev_paths;
 
-        if (num_paths <= 0 || depth >= maxDepth)
+        if (num_paths <= 0 || depth >= traceDepth)
         {
             iterationComplete = true;
         }
