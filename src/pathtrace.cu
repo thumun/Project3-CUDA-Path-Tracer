@@ -166,7 +166,7 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
         }
         if (aa) {
             // antialiasing by jittering the ray
-            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces);
+            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces - 1);
             thrust::uniform_real_distribution<float> u01x(0.0, cam.pixelLength.x);
             thrust::uniform_real_distribution<float> u01y(0.0, cam.pixelLength.y);
 
