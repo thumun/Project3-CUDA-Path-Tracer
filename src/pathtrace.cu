@@ -226,6 +226,20 @@ __global__ void computeIntersections(
             {
                 t = sphereIntersectionTest(geom, pathSegment.ray, tmp_intersect, tmp_normal, outside);
             }
+            else if (geom.type == CUSTOM)
+            {
+                for (int i = 0; i < geom.triangles.size(); i++) {
+                    glm::vec3 bary;
+
+                    t = glm::intersectRayTriangle(pathSegment.ray.origin, 
+                                                  pathSegment.ray.direction, 
+                                                  geom.triangles[i].v0,
+                                                  geom.triangles[i].v1,
+                                                  geom.triangles[i].v2,
+                                                  bary);
+                    break;
+                }
+            }
             // TODO: add more intersection tests here... triangle? metaball? CSG?
 
             // Compute the minimum t from the intersection tests to determine what

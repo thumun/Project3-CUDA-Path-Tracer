@@ -12,13 +12,23 @@
 enum GeomType
 {
     SPHERE,
-    CUBE
+    CUBE,
+    CUSTOM
 };
 
 struct Ray
 {
     glm::vec3 origin;
     glm::vec3 direction;
+};
+
+struct Triangle
+{
+    glm::vec3 v0;
+    glm::vec3 v1;
+    glm::vec3 v2;
+    glm::vec3 n;
+    int materialid;
 };
 
 struct Geom
@@ -31,6 +41,17 @@ struct Geom
     glm::mat4 transform;
     glm::mat4 inverseTransform;
     glm::mat4 invTranspose;
+
+    // obj info
+    std::vector<glm::vec3> verts;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> uvs;
+
+    std::vector<Triangle> triangles;
+
+    // for bounding box check
+    glm::vec3 boundsMin;
+    glm::vec3 boundsMax;
 };
 
 struct Material
