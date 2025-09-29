@@ -16,6 +16,7 @@
 #include "utilities.h"
 #include "intersections.h"
 #include "interactions.h"
+#include "OpenImageDenoise/oidn.hpp"
 
 #define ERRORCHECK 1
 
@@ -87,6 +88,9 @@ static Triangle* dev_tris = NULL;
 static glm::vec3* dev_verts = NULL;
 static glm::vec2* dev_uvs = NULL;
 
+static glm::vec3* dev_image_normals = NULL; 
+static glm::vec3* dev_image_albedo = NULL;
+
 // TODO: static variables for device memory, any extra info you need, etc
 // ...
 
@@ -104,6 +108,12 @@ void pathtraceInit(Scene* scene)
 
     cudaMalloc(&dev_image, pixelcount * sizeof(glm::vec3));
     cudaMemset(dev_image, 0, pixelcount * sizeof(glm::vec3));
+
+    cudaMalloc(&dev_image_albedo, pixelcount * sizeof(glm::vec3));
+    cudaMemset(dev_image_albedo, 0, pixelcount * sizeof(glm::vec3));
+
+    cudaMalloc(&dev_image_normals, pixelcount * sizeof(glm::vec3));
+    cudaMemset(dev_image_normals, 0, pixelcount * sizeof(glm::vec3));
 
     cudaMalloc(&dev_paths, pixelcount * sizeof(PathSegment));
 
@@ -133,6 +143,8 @@ void pathtraceInit(Scene* scene)
 void pathtraceFree()
 {
     cudaFree(dev_image);  // no-op if dev_image is null
+    cudaFree(dev_image_albedo);  // no-op if dev_image is null
+    cudaFree(dev_image_normals);  // no-op if dev_image is null
     cudaFree(dev_paths);
     cudaFree(dev_geoms);
     cudaFree(dev_materials);
@@ -212,7 +224,9 @@ __global__ void computeIntersections(
     Geom* geoms,
     int geoms_size,
     Triangle* tris,
-    ShadeableIntersection* intersections)
+    ShadeableIntersection* intersections, 
+    glm::vec3* norms, 
+    glm::vec3* albedos)
 {
     int path_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -273,6 +287,12 @@ __global__ void computeIntersections(
             intersections[path_index].t = t_min;
             intersections[path_index].materialId = geoms[hit_geom_index].materialid;
             intersections[path_index].surfaceNormal = normal;
+
+            // first iter, setting val when ray hits obj
+            if (depth == 0) {
+                norms[pathSegment.pixelIndex] = normal;
+                albedos[pathSegment.pixelIndex] = pathSegment.color;
+            }
         }
     }
 }
@@ -505,7 +525,9 @@ void pathtrace(uchar4* pbo, int frame, int iter)
             dev_geoms,
             hst_scene->geoms.size(),
             dev_tris,
-            dev_intersections
+            dev_intersections,
+            dev_image_normals,
+            dev_image_albedo
         );
         checkCUDAError("trace one bounce");
         cudaDeviceSynchronize();
@@ -576,6 +598,37 @@ void pathtrace(uchar4* pbo, int frame, int iter)
     finalGather<<<numBlocksPixels, blockSize1d>>>(pixelcount, dev_image, dev_paths);
 
     ///////////////////////////////////////////////////////////////////////////
+
+    bool denoise = false; 
+    if (denoise && iter != 0)
+    {
+        glm::vec3* dev_image_denoised = NULL; 
+
+        cudaMalloc(&dev_image_denoised, pixelcount * sizeof(glm::vec3));
+        cudaMemset(&dev_image_denoised, 0, pixelcount * sizeof(glm::vec3));
+
+        oidn::DeviceRef device = oidn::newDevice();
+        device.commit();
+
+        oidn::FilterRef filter = device.newFilter("RT");
+        filter.setImage("color", dev_image, oidn::Format::Float3, cam.resolution.x, cam.resolution.y);
+        filter.setImage("albedo", dev_image_albedo, oidn::Format::Float3, cam.resolution.x, cam.resolution.y);
+        filter.setImage("normal", dev_image_normals, oidn::Format::Float3, cam.resolution.x, cam.resolution.y);
+        filter.setImage("output", dev_image_denoised, oidn::Format::Float3, cam.resolution.x, cam.resolution.y);
+        filter.set("hdr", true);
+        filter.set("cleanAux", true);
+        filter.commit();
+        filter.execute();
+
+        const char* errorMessage;
+        if (device.getError(errorMessage) != oidn::Error::None)
+            std::cout << "Error: " << errorMessage << std::endl;
+
+        cudaMemcpy(dev_image, dev_image_denoised, pixelcount * sizeof(glm::vec3), cudaMemcpyDeviceToDevice);
+
+        cudaFree(dev_image_denoised);
+    }
+
 
     // Send results to OpenGL buffer for rendering
     sendImageToPBO<<<blocksPerGrid2d, blockSize2d>>>(pbo, cam.resolution, iter, dev_image);

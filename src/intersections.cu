@@ -143,13 +143,10 @@ __host__ __device__ float triangleIntersectionTest(
         if (t > 0.0f) {
             glm::vec3 objspaceIntersection = getPointOnRay(rt, t);
 
-            // convert intersection to world space
             intersectionPoint = multiplyMV(geom.transform, glm::vec4(objspaceIntersection, 1.0f));
 
-            // triangle geometric normal in object space (careful with winding)
             glm::vec3 triNormalObj = tris[i + geom.triOffset].n;
 
-            // transform normal to world space and normalize
             normal = glm::normalize(multiplyMV(geom.invTranspose, glm::vec4(triNormalObj, 0.0f)));
 
             return glm::length(rt.origin - intersectionPoint);

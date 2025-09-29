@@ -128,7 +128,7 @@
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[3.0,3.0,3.0]
         },
-       {
+        {
             "TYPE":"sphere",
             "MATERIAL":"specular_mirror",
             "TRANS":[3.0,4.0,-1.0],
@@ -136,12 +136,12 @@
             "SCALE":[3.0,3.0,3.0]
         },
         {
-            "TYPE":"custom",
-            "MATERIAL":"diffuse_green",
+            "TYPE":"sphere",
+            "MATERIAL":"transmissive_total",
             "TRANS":[-3.0,2.0,-1.0],
             "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[3.0,3.0,3.0],
-            "FILE": "../scenes/teapot.obj"
+            "SCALE":[3.0,3.0,3.0]
         }
+        
     ]
 }
