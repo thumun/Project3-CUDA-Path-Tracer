@@ -358,7 +358,8 @@ __global__ void shadeBSDFMaterial(
             // This can be useful for post-processing and image compositing.
         }
         else {
-            glm::vec3 colorTEST = sampleSkybox(pathSegments[idx].ray.direction);
+            //glm::vec3 colorTEST = sampleSkybox(pathSegments[idx].ray.direction);
+            glm::vec3 colorTEST = glm::vec3(0.0f);
 
             pathSegments[idx].color = colorTEST;
             pathSegments[idx].remainingBounces = 0;
@@ -599,13 +600,13 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
     ///////////////////////////////////////////////////////////////////////////
 
-    bool denoise = false; 
+    bool denoise = true; 
     if (denoise && iter != 0)
     {
         glm::vec3* dev_image_denoised = NULL; 
 
         cudaMalloc(&dev_image_denoised, pixelcount * sizeof(glm::vec3));
-        cudaMemset(&dev_image_denoised, 0, pixelcount * sizeof(glm::vec3));
+        cudaMemset(dev_image_denoised, 0, pixelcount * sizeof(glm::vec3));
 
         oidn::DeviceRef device = oidn::newDevice();
         device.commit();
