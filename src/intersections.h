@@ -79,3 +79,9 @@ __host__ __device__ float triangleIntersectionTest(
     glm::vec3& intersectionPoint,
     glm::vec3& normal,
     Triangle* tris);
+
+__host__ __device__ bool intersectionBoundingBox(
+    glm::vec3 rayOrig,
+    glm::vec3 rayDir,
+    glm::vec3 minB,
+    glm::vec3 maxB);

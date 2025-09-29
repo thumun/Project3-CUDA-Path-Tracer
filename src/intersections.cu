@@ -126,33 +126,82 @@ __host__ __device__ float triangleIntersectionTest(
     rt.origin = ro;
     rt.direction = rd;
 
-    for (int i = 0; i < geom.triCount; i++) {
-        glm::vec3 bary;
+    glm::vec3 bboxMin = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMin, 1.0f));
+    glm::vec3 bboxMax = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMax, 1.0f));
 
-        float hit = glm::intersectRayTriangle(rt.origin, 
-            rt.direction,
-            tris[i + geom.triOffset].v0,
-            tris[i + geom.triOffset].v1,
-            tris[i + geom.triOffset].v2,
-            bary);
+    // check bounding box first 
+    bool isIntersect = intersectionBoundingBox(r.origin, r.direction, bboxMin, bboxMax);
 
-        if (!hit) continue;
+    if (isIntersect) {
+        for (int i = 0; i < geom.triCount; i++) {
+            glm::vec3 bary;
 
-        float t = bary.z;
+            float hit = glm::intersectRayTriangle(rt.origin,
+                rt.direction,
+                tris[i + geom.triOffset].v0,
+                tris[i + geom.triOffset].v1,
+                tris[i + geom.triOffset].v2,
+                bary);
 
-        if (t > 0.0f) {
-            glm::vec3 objspaceIntersection = getPointOnRay(rt, t);
+            if (!hit) continue;
 
-            intersectionPoint = multiplyMV(geom.transform, glm::vec4(objspaceIntersection, 1.0f));
+            float t = bary.z;
 
-            glm::vec3 triNormalObj = tris[i + geom.triOffset].n;
+            if (t > 0.0f) {
+                glm::vec3 objspaceIntersection = getPointOnRay(rt, t);
 
-            normal = glm::normalize(multiplyMV(geom.invTranspose, glm::vec4(triNormalObj, 0.0f)));
+                intersectionPoint = multiplyMV(geom.transform, glm::vec4(objspaceIntersection, 1.0f));
 
-            return glm::length(rt.origin - intersectionPoint);
+                glm::vec3 triNormalObj = tris[i + geom.triOffset].n;
+
+                normal = glm::normalize(multiplyMV(geom.invTranspose, glm::vec4(triNormalObj, 0.0f)));
+
+                return glm::length(rt.origin - intersectionPoint);
+            }
+
         }
-
     }
 
     return -1;
+}
+
+// fix this hmmmm
+// prob world space obj space issue ughhh
+__host__ __device__
+bool intersectionBoundingBox(
+    glm::vec3 rayOrig,
+    glm::vec3 rayDir,
+    glm::vec3 minB,
+    glm::vec3 maxB)
+{
+    float tmin = -1e38f;
+    float tmax = 1e38f;
+
+    for (int xyz = 0; xyz < 3; xyz++) {
+
+        // ray = orig + t * dir & plane = minB/maxB[xyz]
+        // so want to solve for t (intersection of the two)
+
+        // doing this to prevent weird division issues
+        float qdxyz = 1.0f / rayDir[xyz];
+
+        float t0 = (minB[xyz] - rayOrig[xyz]) * qdxyz;
+        float t1 = (maxB[xyz] - rayOrig[xyz]) * qdxyz;
+
+        // gotta swap for enter & exit
+        if (qdxyz < 0.0f) {
+            float tmp = t0;
+            t0 = t1;
+            t1 = tmp;
+        }
+
+        tmin = glm::max(tmin, t0);
+        tmax = glm::min(tmax, t1);
+
+        if (tmax < tmin) {
+            return false;
+        }
+    }
+
+    return true;
 }
