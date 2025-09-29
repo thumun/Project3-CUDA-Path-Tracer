@@ -111,3 +111,51 @@ __host__ __device__ float sphereIntersectionTest(
 
     return glm::length(r.origin - intersectionPoint);
 }
+
+__host__ __device__ float triangleIntersectionTest(
+    Geom geom,
+    Ray r,
+    glm::vec3& intersectionPoint,
+    glm::vec3& normal,
+    Triangle* tris)
+{
+    glm::vec3 ro = multiplyMV(geom.inverseTransform, glm::vec4(r.origin, 1.0f));
+    glm::vec3 rd = glm::normalize(multiplyMV(geom.inverseTransform, glm::vec4(r.direction, 0.0f)));
+
+    Ray rt;
+    rt.origin = ro;
+    rt.direction = rd;
+
+    for (int i = 0; i < geom.triCount; i++) {
+        glm::vec3 bary;
+
+        float hit = glm::intersectRayTriangle(rt.origin, 
+            rt.direction,
+            tris[i + geom.triOffset].v0,
+            tris[i + geom.triOffset].v1,
+            tris[i + geom.triOffset].v2,
+            bary);
+
+        if (!hit) continue;
+
+        float t = bary.z;
+
+        if (t > 0.0f) {
+            glm::vec3 objspaceIntersection = getPointOnRay(rt, t);
+
+            // convert intersection to world space
+            intersectionPoint = multiplyMV(geom.transform, glm::vec4(objspaceIntersection, 1.0f));
+
+            // triangle geometric normal in object space (careful with winding)
+            glm::vec3 triNormalObj = tris[i + geom.triOffset].n;
+
+            // transform normal to world space and normalize
+            normal = glm::normalize(multiplyMV(geom.invTranspose, glm::vec4(triNormalObj, 0.0f)));
+
+            return glm::length(rt.origin - intersectionPoint);
+        }
+
+    }
+
+    return -1;
+}

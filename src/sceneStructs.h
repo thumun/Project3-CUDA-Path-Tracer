@@ -42,12 +42,14 @@ struct Geom
     glm::mat4 inverseTransform;
     glm::mat4 invTranspose;
 
-    // obj info
-    std::vector<glm::vec3> verts;
-    std::vector<glm::vec3> normals;
-    std::vector<glm::vec2> uvs;
+    int vertCount;
+    int vertOffset; 
 
-    std::vector<Triangle> triangles;
+    int uvCount;
+    int uvOffset; 
+
+    int triCount;
+    int triOffset;
 
     // for bounding box check
     glm::vec3 boundsMin;

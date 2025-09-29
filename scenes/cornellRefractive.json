@@ -136,12 +136,12 @@
             "SCALE":[3.0,3.0,3.0]
         },
         {
-            "TYPE":"sphere",
-            "MATERIAL":"transmissive_total",
+            "TYPE":"custom",
+            "MATERIAL":"diffuse_green",
             "TRANS":[-3.0,2.0,-1.0],
             "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[3.0,3.0,3.0]
+            "SCALE":[3.0,3.0,3.0],
+            "FILE": "../scenes/teapot.obj"
         }
-
     ]
 }

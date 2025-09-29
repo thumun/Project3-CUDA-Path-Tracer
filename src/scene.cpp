@@ -82,6 +82,9 @@ void Scene::loadFromJSON(const std::string& jsonName)
         materials.emplace_back(newMaterial);
     }
     const auto& objectsData = data["Objects"];
+
+    bool success = true;
+
     for (const auto& p : objectsData)
     {
         const auto& type = p["TYPE"];
@@ -89,28 +92,33 @@ void Scene::loadFromJSON(const std::string& jsonName)
         if (type == "cube")
         {
             newGeom.type = CUBE;
+            success = true;
         }
         else if (type == "sphere")
         {
             newGeom.type = SPHERE;
+            success = true;
         }
         else {
             newGeom.type = CUSTOM;
-            loadFromOBJ(p["FILE"], newGeom);
+            success = loadFromOBJ(p["FILE"], newGeom);
         }
-        newGeom.materialid = MatNameToID[p["MATERIAL"]];
-        const auto& trans = p["TRANS"];
-        const auto& rotat = p["ROTAT"];
-        const auto& scale = p["SCALE"];
-        newGeom.translation = glm::vec3(trans[0], trans[1], trans[2]);
-        newGeom.rotation = glm::vec3(rotat[0], rotat[1], rotat[2]);
-        newGeom.scale = glm::vec3(scale[0], scale[1], scale[2]);
-        newGeom.transform = utilityCore::buildTransformationMatrix(
-            newGeom.translation, newGeom.rotation, newGeom.scale);
-        newGeom.inverseTransform = glm::inverse(newGeom.transform);
-        newGeom.invTranspose = glm::inverseTranspose(newGeom.transform);
 
-        geoms.push_back(newGeom);
+        if (success) {
+            newGeom.materialid = MatNameToID[p["MATERIAL"]];
+            const auto& trans = p["TRANS"];
+            const auto& rotat = p["ROTAT"];
+            const auto& scale = p["SCALE"];
+            newGeom.translation = glm::vec3(trans[0], trans[1], trans[2]);
+            newGeom.rotation = glm::vec3(rotat[0], rotat[1], rotat[2]);
+            newGeom.scale = glm::vec3(scale[0], scale[1], scale[2]);
+            newGeom.transform = utilityCore::buildTransformationMatrix(
+                newGeom.translation, newGeom.rotation, newGeom.scale);
+            newGeom.inverseTransform = glm::inverse(newGeom.transform);
+            newGeom.invTranspose = glm::inverseTranspose(newGeom.transform);
+
+            geoms.push_back(newGeom);
+        }
     }
     const auto& cameraData = data["Camera"];
     Camera& camera = state.camera;
@@ -156,7 +164,15 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
     std::string err;
     std::string warn;
 
+    geom.vertOffset = verts.size();
+    geom.uvOffset = uvs.size();
+    geom.triOffset = triangles.size();
+
     bool success = tinyobj::LoadObj(&attrib, &shapes, &objmaterials, &warn, &err, fileName.c_str()); 
+
+    if (!success) {
+        return success;
+    }
 
     glm::vec3 firstVert(attrib.vertices[0], attrib.vertices[1], attrib.vertices[2]);
     glm::vec3 maxBounds = firstVert;
@@ -168,17 +184,11 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
         maxBounds = glm::max(maxBounds, vert);
         minBounds = glm::max(minBounds, vert);
 
-        geom.verts.push_back(glm::vec3(vert));
+        verts.push_back(glm::vec3(vert));
     }
-
-    /*
-    for (int i = 0; i < attrib.normals.size(); i+=3) {
-        geom.normals.push_back(glm::vec3(attrib.normals[i], attrib.normals[i + 1], attrib.normals[i + 2]));
-    }
-    */
 
     for (int i = 0; i < attrib.texcoords.size(); i+=2) {
-        geom.uvs.push_back(glm::vec2(attrib.texcoords[i], attrib.texcoords[i + 1]));
+        uvs.push_back(glm::vec2(attrib.texcoords[i], attrib.texcoords[i + 1]));
     }
 
     // setting up faces (triangulated)
@@ -209,9 +219,13 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
             // can use shape.material_ids
             t.materialid = geom.materialid;
 
-            geom.triangles.push_back(t);
+            triangles.push_back(t);
         }
     }
+
+    geom.vertCount = verts.size();
+    geom.uvCount = uvs.size();
+    geom.triCount = triangles.size();
 
     return success;
 }

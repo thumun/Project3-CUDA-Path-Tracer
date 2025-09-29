@@ -13,5 +13,8 @@ public:
 
     std::vector<Geom> geoms;
     std::vector<Material> materials;
+    std::vector<Triangle> triangles;
+    std::vector<glm::vec2> uvs; 
+    std::vector<glm::vec3> verts; 
     RenderState state;
 };
