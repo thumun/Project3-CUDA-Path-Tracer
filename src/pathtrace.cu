@@ -600,7 +600,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
     ///////////////////////////////////////////////////////////////////////////
 
-    bool denoise = true; 
+    bool denoise = false; 
     if (denoise && iter != 0)
     {
         glm::vec3* dev_image_denoised = NULL; 

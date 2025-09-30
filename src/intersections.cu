@@ -126,13 +126,40 @@ __host__ __device__ float triangleIntersectionTest(
     rt.origin = ro;
     rt.direction = rd;
 
-    glm::vec3 bboxMin = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMin, 1.0f));
-    glm::vec3 bboxMax = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMax, 1.0f));
+    //glm::vec3 bboxMin = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMin, 1.0f));
+    //glm::vec3 bboxMax = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMax, 1.0f));
 
     // check bounding box first 
-    bool isIntersect = intersectionBoundingBox(r.origin, r.direction, bboxMin, bboxMax);
+    bool isIntersect = intersectionBoundingBox(rt.origin, rt.direction, geom.boundsMin, geom.boundsMax);
+    //bool isIntersect = true;
 
     if (isIntersect) {
+        float closestT = 1e38f;
+        int closestIdx = -1;
+        glm::vec3 closestBary;
+
+        for (int i = 0; i < geom.triCount; i++) {
+            glm::vec3 bary;
+            float hit = glm::intersectRayTriangle(rt.origin, rt.direction,
+                tris[i + geom.triOffset].v0,
+                tris[i + geom.triOffset].v1,
+                tris[i + geom.triOffset].v2, bary);
+
+            if (hit && bary.z > 0.0f && bary.z < closestT) {
+                closestT = bary.z;
+                closestIdx = i;
+                closestBary = bary;
+            }
+        }
+
+        if (closestIdx != -1) {
+            glm::vec3 objspaceIntersection = getPointOnRay(rt, closestT);
+            intersectionPoint = multiplyMV(geom.transform, glm::vec4(objspaceIntersection, 1.0f));
+            glm::vec3 triNormalObj = tris[closestIdx + geom.triOffset].n;
+            normal = glm::normalize(multiplyMV(geom.invTranspose, glm::vec4(triNormalObj, 0.0f)));
+            return glm::length(rt.origin - intersectionPoint);
+        }
+        /*
         for (int i = 0; i < geom.triCount; i++) {
             glm::vec3 bary;
 
@@ -160,6 +187,7 @@ __host__ __device__ float triangleIntersectionTest(
             }
 
         }
+        */
     }
 
     return -1;
@@ -177,31 +205,30 @@ bool intersectionBoundingBox(
     float tmin = -1e38f;
     float tmax = 1e38f;
 
-    for (int xyz = 0; xyz < 3; xyz++) {
-
-        // ray = orig + t * dir & plane = minB/maxB[xyz]
-        // so want to solve for t (intersection of the two)
-
-        // doing this to prevent weird division issues
-        float qdxyz = 1.0f / rayDir[xyz];
-
-        float t0 = (minB[xyz] - rayOrig[xyz]) * qdxyz;
-        float t1 = (maxB[xyz] - rayOrig[xyz]) * qdxyz;
-
-        // gotta swap for enter & exit
-        if (qdxyz < 0.0f) {
-            float tmp = t0;
-            t0 = t1;
-            t1 = tmp;
-        }
-
-        tmin = glm::max(tmin, t0);
-        tmax = glm::min(tmax, t1);
-
-        if (tmax < tmin) {
-            return false;
+    for (int xyz = 0; xyz < 3; ++xyz)
+    {
+        float qdxyz = rayDir[xyz];
+        /*if (glm::abs(qdxyz) > 0.00001f)*/
+        {
+            float t1 = (minB[xyz] - rayOrig[xyz]) / qdxyz;
+            float t2 = (maxB[xyz] - rayOrig[xyz]) / qdxyz;
+            float ta = glm::min(t1, t2);
+            float tb = glm::max(t1, t2);
+            if (ta > 0 && ta > tmin)
+            {
+                tmin = ta;
+            }
+            if (tb < tmax)
+            {
+                tmax = tb;
+            }
         }
     }
 
-    return true;
+    if (tmax >= tmin && tmax > 0)
+    {
+        return true;
+    }
+
+    return false;
 }

@@ -182,7 +182,7 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
         glm::vec3 vert = glm::vec3(attrib.vertices[i], attrib.vertices[i+1], attrib.vertices[i+2]);
 
         maxBounds = glm::max(maxBounds, vert);
-        minBounds = glm::max(minBounds, vert);
+        minBounds = glm::min(minBounds, vert);
 
         verts.push_back(glm::vec3(vert));
     }
@@ -226,6 +226,8 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
     geom.vertCount = verts.size();
     geom.uvCount = uvs.size();
     geom.triCount = triangles.size();
+    geom.boundsMin = minBounds;
+    geom.boundsMax = maxBounds;
 
     return success;
 }
