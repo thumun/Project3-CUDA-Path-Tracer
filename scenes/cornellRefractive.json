@@ -43,27 +43,16 @@
             "RGB": [ 0.7, 0.7, 0.7 ],
             "ROUGHNESS": 0.0
         },
-        "transmissive_total": {
-            "TYPE": "Transmissive",
-            "RGB": [ 0.2, 0.8, 0.2 ],
-            "ROUGHNESS": 0.0,
-            "IOR": 1.33,
-            "TRANSMISSIVITY": 1.0
+        "specular_sliver": {
+           "TYPE": "Specular",
+           "RGB": [ 0.78, 0.86, 0.90 ],
+           "ROUGHNESS": 0.0
         },
-        "transmissive_partial": {
-            "TYPE": "Transmissive",
-            "RGB": [ 0.2, 0.8, 0.2 ],
-            "ROUGHNESS": 0.2,
-            "IOR": 1.33,
-            "TRANSMISSIVITY": 0.8
-        },
-        "transmissive_none": {
-            "TYPE": "Transmissive",
-            "RGB": [ 0.2, 0.8, 0.2 ],
-            "ROUGHNESS": 0.7,
-            "IOR": 1.33,
-            "TRANSMISSIVITY": 0.7
-        }
+    	"glass": {
+      	     "TYPE": "Refractive",
+      	     "RGB": [ 0.8, 0.8, 0.8 ],
+             "IOR": 2.0
+    	}
     },
     "Camera":
     {
@@ -123,25 +112,10 @@
         },
         {
             "TYPE":"sphere",
-            "MATERIAL":"specular_rough",
+            "MATERIAL":"glass",
             "TRANS":[-1.0,4.0,-1.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[3.0,3.0,3.0]
-        },
-        {
-            "TYPE":"sphere",
-            "MATERIAL":"specular_mirror",
-            "TRANS":[3.0,4.0,-1.0],
-            "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[3.0,3.0,3.0]
-        },
-        {
-            "TYPE":"sphere",
-            "MATERIAL":"transmissive_total",
-            "TRANS":[-3.0,2.0,-1.0],
-            "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[3.0,3.0,3.0]
         }
-        
     ]
 }

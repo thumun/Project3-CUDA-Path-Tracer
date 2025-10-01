@@ -340,10 +340,8 @@ __global__ void shadeBSDFMaterial(
                 // t (first intersection of ray in scene) * dir of ray + origin of ray
                 // tldr; where along ray is the hit/ intersection
 
-                glm::vec3 intersectionPt = pathSegments[idx].ray.origin + (pathSegments[idx].ray.direction * intersection.t);
-
-                pathSegments[idx].color *= materialColor;
-                scatterRay(pathSegments[idx], intersectionPt, intersection.surfaceNormal, material, rng);
+                glm::vec3 intersectionPt = getPointOnRay(pathSegments[idx].ray, intersection.t);
+                scatterRay(pathSegments[idx], intersectionPt, glm::normalize(intersection.surfaceNormal), material, rng);
 
                 if (pathSegments[idx].remainingBounces > 0) {
                     pathSegments[idx].remainingBounces -= 1;
@@ -597,7 +595,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
     // Assemble this iteration and apply it to the image
     dim3 numBlocksPixels = (pixelcount + blockSize1d - 1) / blockSize1d;
     finalGather<<<numBlocksPixels, blockSize1d>>>(pixelcount, dev_image, dev_paths);
-
+    cudaDeviceSynchronize();
     ///////////////////////////////////////////////////////////////////////////
 
     bool denoise = false; 
