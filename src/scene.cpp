@@ -250,118 +250,175 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
     for (int i = geom.triOffset; i < geom.triOffset + geom.triCount; i++) {
         geomTriangles.push_back(triangles[i]);
     }
-
-    bvhRoot = buildBVH(geomTriangles, 0, geomTriangles.size(), 0);
-
-    return success;
-}
-
-BVHNode* Scene::buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth) {
-    // to set rt & left children of leaf
-    if (start >= end) return nullptr;
-
-    BVHNode* node = new BVHNode();
-    node->triangles.assign(triangles.begin() + start, triangles.begin() + end);
-    node->calculateBounds();
-
-    // leaf
-    if (end - start <= 4 || depth > 20) {
-        node->isLeaf = true;
-        node->triangles.assign(triangles.begin() + start, triangles.begin() + end);
-        return node;
-    }
-
-    // refactor below code
-    // Find longest axis
-    glm::vec3 boundsSize = node->maxBounds - node->minBounds;
+    // sort triangles now so can skip that in Bvh
+    glm::vec3 boundsSize = geom.boundsMax - geom.boundsMin;
     int axis = (boundsSize.x >= boundsSize.y && boundsSize.x >= boundsSize.z) ? 0 :
         (boundsSize.y >= boundsSize.z) ? 1 : 2;
 
     // Sort by centroid along longest axis
+    /*std::vector<glm::vec3> centroids;
+    for (auto const& tri: geomTriangles)
+    {
+        centroids.push_back(glm::vec3((tri.v0 + tri.v1 + tri.v2) / 3.0f));
+    }*/
     auto centroid = [](const Triangle& tri) {
         return (tri.v0 + tri.v1 + tri.v2) / 3.0f;
-        };
+    };
 
-    std::sort(triangles.begin() + start, triangles.begin() + end,
+    std::sort(geomTriangles.begin(), geomTriangles.begin() + geom.triCount,
         [axis, centroid](const Triangle& a, const Triangle& b) {
             return centroid(a)[axis] < centroid(b)[axis];
         });
 
+    // updating og w/ sort -- do I need two diff arrays???
+    // ok if mult obj support but don't have that (?)
+    for (int i = 0; i < geomTriangles.size(); i++) {
+        triangles[geom.triOffset + i] = geomTriangles[i];
+    }
+
+    /*BVHNode& root = BVHNode();
+    bvhNodes.push_back(root);*/
+
+    buildBVH(geomTriangles, 0, geomTriangles.size(), 0);
+    bvhNodes[0].numNodes = bvhNodes.size();
+
+    return success;
+}
+
+void calculateBounds(std::vector<Triangle>& triangles, int start, int end, glm::vec3& minBounds, glm::vec3& maxBounds) {
+    if (triangles.empty()) return;
+
+    minBounds = glm::vec3(FLT_MAX);
+    maxBounds = glm::vec3(-FLT_MAX);
+
+    for (int t = start; t < end; t++) {
+        auto tri = &triangles[t];
+
+        minBounds = glm::min(minBounds, tri->v0);
+        minBounds = glm::min(minBounds, tri->v1);
+        minBounds = glm::min(minBounds, tri->v2);
+
+        maxBounds = glm::max(maxBounds, tri->v0);
+        maxBounds = glm::max(maxBounds, tri->v1);
+        maxBounds = glm::max(maxBounds, tri->v2);
+    }
+}
+
+void Scene::buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth) {
+    // to set rt & left children of leaf
+
+    if (start >= end) {
+        return;
+    }
+
+    // BVHNode* current = &bvhNodes[bvhNodes.size() - 1];
+
+    int currentNodeIndex = bvhNodes.size();
+    bvhNodes.push_back(BVHNode());
+    BVHNode& current = bvhNodes[currentNodeIndex];
+
+    calculateBounds(triangles, start, end, current.minBounds, current.maxBounds); // setting min max bounds
+
+    // leaf
+    if (end - start <= 4 || depth > 20) {
+        current.isLeaf = true;
+        current.leftChild = -1;
+        current.rightChild = -1;
+
+        // need to get the triangles that are in this leaf chunk
+        current.triStart = start;
+        current.triEnd = end;
+
+        return;
+    }
+
+    current.isLeaf = false;
+
     // Split at median
     int mid = start + (end - start) / 2;
 
-    node->isLeaf = false;
-    node->leftChild = buildBVH(triangles, start, mid, depth + 1);
-    node->rightChild = buildBVH(triangles, mid, end, depth + 1);
+    current.leftChild = bvhNodes.size();
+    buildBVH(triangles, start, mid, depth + 1);
 
-    return node;
+    current.rightChild = bvhNodes.size();
+    buildBVH(triangles, mid, end, depth + 1);
+
+    /*BVHNode& left = BVHNode();
+    bvhNodes.push_back(left);
+    current->leftChild = bvhNodes.size()-1;
+    buildBVH(triangles, start, mid, depth + 1);
+
+    BVHNode& right = BVHNode();
+    bvhNodes.push_back(right);
+    current->rightChild = bvhNodes.size() - 1;
+    buildBVH(triangles, mid, end, depth + 1);*/
 }
 
-bool boundingBoxCheck(
-    glm::vec3 rayOrig,
-    glm::vec3 rayDir,
-    glm::vec3 minB,
-    glm::vec3 maxB)
-{
-    float tmin = -1e38f;
-    float tmax = 1e38f;
-
-    for (int xyz = 0; xyz < 3; ++xyz)
-    {
-        float qdxyz = rayDir[xyz];
-        /*if (glm::abs(qdxyz) > 0.00001f)*/
-        {
-            float t1 = (minB[xyz] - rayOrig[xyz]) / qdxyz;
-            float t2 = (maxB[xyz] - rayOrig[xyz]) / qdxyz;
-            float ta = glm::min(t1, t2);
-            float tb = glm::max(t1, t2);
-            if (ta > 0 && ta > tmin)
-            {
-                tmin = ta;
-            }
-            if (tb < tmax)
-            {
-                tmax = tb;
-            }
-        }
-    }
-
-    if (tmax >= tmin && tmax > 0)
-    {
-        return true;
-    }
-
-    return false;
-}
+//bool boundingBoxCheck(
+//    glm::vec3 rayOrig,
+//    glm::vec3 rayDir,
+//    glm::vec3 minB,
+//    glm::vec3 maxB)
+//{
+//    float tmin = -1e38f;
+//    float tmax = 1e38f;
+//
+//    for (int xyz = 0; xyz < 3; ++xyz)
+//    {
+//        float qdxyz = rayDir[xyz];
+//        /*if (glm::abs(qdxyz) > 0.00001f)*/
+//        {
+//            float t1 = (minB[xyz] - rayOrig[xyz]) / qdxyz;
+//            float t2 = (maxB[xyz] - rayOrig[xyz]) / qdxyz;
+//            float ta = glm::min(t1, t2);
+//            float tb = glm::max(t1, t2);
+//            if (ta > 0 && ta > tmin)
+//            {
+//                tmin = ta;
+//            }
+//            if (tb < tmax)
+//            {
+//                tmax = tb;
+//            }
+//        }
+//    }
+//
+//    if (tmax >= tmin && tmax > 0)
+//    {
+//        return true;
+//    }
+//
+//    return false;
+//}
 
 // need to edit this to match format of funcc in intersections
-bool Scene::intersectBVH(BVHNode* node, const Ray& ray) {
-    if (!node) {
-        return false;
-    }
-
-    if (!boundingBoxCheck(ray.origin, ray.direction, node->minBounds, node->maxBounds)) {
-        return false;
-    }
-
-    bool hit = false;
-
-    if (node->isLeaf) {
-        glm::vec3 bary;
-        for (auto const& t : node->triangles)
-        {
-            bool hit = glm::intersectRayTriangle(ray.origin, ray.direction,
-                t.v0,
-                t.v1,
-                t.v2,
-                bary);
-        }
-    }
-    else {
-        bool hitLeft = intersectBVH(node->leftChild, ray);
-        bool hitRight = intersectBVH(node->rightChild, ray);
-        hit = hitLeft || hitRight;
-    }
-
-    return hit;
-}
+//bool Scene::intersectBVH(BVHNode* node, const Ray& ray) {
+//    if (!node) {
+//        return false;
+//    }
+//
+//    if (!boundingBoxCheck(ray.origin, ray.direction, node->minBounds, node->maxBounds)) {
+//        return false;
+//    }
+//
+//    bool hit = false;
+//
+//    if (node->isLeaf) {
+//        glm::vec3 bary;
+//        for (auto const& t : node->triangles)
+//        {
+//            bool hit = glm::intersectRayTriangle(ray.origin, ray.direction,
+//                t.v0,
+//                t.v1,
+//                t.v2,
+//                bary);
+//        }
+//    }
+//    else {
+//        bool hitLeft = intersectBVH(node->leftChild, ray);
+//        bool hitRight = intersectBVH(node->rightChild, ray);
+//        hit = hitLeft || hitRight;
+//    }
+//
+//    return hit;
+//}

@@ -123,33 +123,17 @@ struct ShadeableIntersection
 struct BVHNode {
     glm::vec3 minBounds;
     glm::vec3 maxBounds;
-    BVHNode* leftChild;
-    BVHNode* rightChild;
-    std::vector<Triangle> triangles; // Empty for internal nodes
-    bool isLeaf;
+    int leftChild = -1;
+    int rightChild = -1;
 
-    BVHNode() : leftChild(nullptr), rightChild(nullptr), isLeaf(false) {}
+    // sort the triangles initially and just store amount & index like in geom
+    int triStart = -1;
+    int triEnd = -1;
 
-    // Constructor for leaf nodes
-    BVHNode(const std::vector<Triangle>& tris)
-        : leftChild(nullptr), rightChild(nullptr), triangles(tris), isLeaf(true)
-    {
-        calculateBounds();
-    }
+    // change to be empty for non-leaves to save memory hmm
+    // std::vector<Triangle> triangles; 
+    bool isLeaf = false; // is this allowed on gpu or explicit 1/0?
 
-    void calculateBounds() {
-        if (triangles.empty()) return;
-
-        minBounds = glm::vec3(FLT_MAX);
-        maxBounds = glm::vec3(-FLT_MAX);
-
-        for (const auto& tri : triangles) {
-            minBounds = glm::min(minBounds, tri.v0);
-            minBounds = glm::min(minBounds, tri.v1);
-            minBounds = glm::min(minBounds, tri.v2);
-            maxBounds = glm::max(maxBounds, tri.v0);
-            maxBounds = glm::max(maxBounds, tri.v1);
-            maxBounds = glm::max(maxBounds, tri.v2);
-        }
-    }
+    // only use for root!!
+    int numNodes = -1;
 };
