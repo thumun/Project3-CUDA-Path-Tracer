@@ -85,3 +85,10 @@ __host__ __device__ bool intersectionBoundingBox(
     glm::vec3 rayDir,
     glm::vec3 minB,
     glm::vec3 maxB);
+
+__host__ __device__
+int meshIntersectionTest(
+    Geom geom,
+    Ray r,
+    BVHNode* bvh,
+    int nodeIndx);
