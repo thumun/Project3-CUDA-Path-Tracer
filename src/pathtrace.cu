@@ -286,14 +286,17 @@ __global__ void computeIntersections(
             
             else if (geom.type == CUSTOM)
             {
-                int nodeIdx = meshIntersectionTest(
+                /*int nodeIdx = meshIntersectionTest(
                     geom,
                     pathSegment.ray,
                     bvh,
-                    0);
+                    0);*/
+                int nodeIdx = 1;
+
+                bool boundingBox = true;
 
                 if (nodeIdx > 0) {
-                    t = triangleIntersectionTest(geom, pathSegment.ray, tmp_intersect, tmp_normal, tris);
+                    t = triangleIntersectionTest(geom, pathSegment.ray, tmp_intersect, tmp_normal, tris, boundingBox);
                 }
             }
 

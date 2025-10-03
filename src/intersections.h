@@ -78,7 +78,8 @@ __host__ __device__ float triangleIntersectionTest(
     Ray r,
     glm::vec3& intersectionPoint,
     glm::vec3& normal,
-    Triangle* tris);
+    Triangle* tris,
+    bool bboxEnabled);
 
 __host__ __device__ bool intersectionBoundingBox(
     glm::vec3 rayOrig,

@@ -117,7 +117,8 @@ __host__ __device__ float triangleIntersectionTest(
     Ray r,
     glm::vec3& intersectionPoint,
     glm::vec3& normal,
-    Triangle* tris)
+    Triangle* tris,
+    bool bboxEnabled)
 {
     glm::vec3 ro = multiplyMV(geom.inverseTransform, glm::vec4(r.origin, 1.0f));
     glm::vec3 rd = glm::normalize(multiplyMV(geom.inverseTransform, glm::vec4(r.direction, 0.0f)));
@@ -130,8 +131,14 @@ __host__ __device__ float triangleIntersectionTest(
     //glm::vec3 bboxMax = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMax, 1.0f));
 
     // check bounding box first 
-    bool isIntersect = intersectionBoundingBox(rt.origin, rt.direction, geom.boundsMin, geom.boundsMax);
-    //bool isIntersect = true;
+    bool isIntersect; 
+
+    if (bboxEnabled) {
+        isIntersect = intersectionBoundingBox(rt.origin, rt.direction, geom.boundsMin, geom.boundsMax);
+    }
+    else {
+        isIntersect = true;
+    }
 
     if (isIntersect) {
         float closestT = 1e38f;
@@ -244,25 +251,25 @@ int meshIntersectionTest(
 
     BVHNode node = bvh[nodeIndx];
 
-    glm::vec3 ro = multiplyMV(geom.inverseTransform, glm::vec4(r.origin, 1.0f));
-    glm::vec3 rd = glm::normalize(multiplyMV(geom.inverseTransform, glm::vec4(r.direction, 0.0f)));
+        glm::vec3 ro = multiplyMV(geom.inverseTransform, glm::vec4(r.origin, 1.0f));
+        glm::vec3 rd = glm::normalize(multiplyMV(geom.inverseTransform, glm::vec4(r.direction, 0.0f)));
 
-    Ray rt;
-    rt.origin = ro;
-    rt.direction = rd;
+        Ray rt;
+        rt.origin = ro;
+        rt.direction = rd;
 
-    if (!intersectionBoundingBox(rt.origin, rt.direction, node.minBounds, node.maxBounds)) {
+        if (!intersectionBoundingBox(rt.origin, rt.direction, node.minBounds, node.maxBounds)) {
         return -1;
-    }
+        }
 
-    if (node.isLeaf) {
-        return node.myIndex;
-    }
+        if (node.isLeaf) {
+            return node.myIndex;
+        }
 
     int returnLeft = meshIntersectionTest(geom, r, bvh, node.leftChild);
     if (returnLeft == -1) {
         return meshIntersectionTest(geom, r, bvh, node.rightChild);
-    }
+        }
     else {
         return returnLeft;
     }
