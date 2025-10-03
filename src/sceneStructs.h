@@ -81,7 +81,7 @@ struct Camera
     glm::vec3 right;
     glm::vec2 fov;
     glm::vec2 pixelLength;
-    float lensDiameter;
+    float aperture;
     float focalDistance;
 };
 
@@ -92,6 +92,13 @@ struct RenderState
     int traceDepth;
     std::vector<glm::vec3> image;
     std::string imageName;
+
+	//other render state parameters as needed
+	bool antialiasEnable = false;
+	bool dofEnable = false;
+	bool denoiseEnable = false;
+	bool streamCompactEnable = false;
+	bool russianRouletteEnable = false;
 };
 
 struct PathSegment

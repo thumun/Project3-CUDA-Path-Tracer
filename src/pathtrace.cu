@@ -157,6 +157,24 @@ void pathtraceFree()
     checkCUDAError("pathtraceFree");
 }
 
+//https://pbr-book.org/4ed/Sampling_Algorithms/Sampling_Multidimensional_Functions#SampleUniformDiskConcentric
+__device__ glm::vec2 sampleUniformDiskConcentric(glm::vec2 u) {
+	glm::vec2 uOffset = 2.0f * u - glm::vec2(1.0f, 1.0f);
+    if (uOffset.x == 0 && uOffset.y == 0) {
+        return glm::vec2(0.0f, 0.0f);
+	}
+    //Apply concentric mapping to point
+    float theta, r;
+    if (std::abs(uOffset.x) > std::abs(uOffset.y)) {
+        r = uOffset.x;
+        theta = (PI / 4.0f) * (uOffset.y / uOffset.x);
+    }
+    else {
+        r = uOffset.y;
+        theta = (PI / 2.0f) - (PI / 4.0f) * (uOffset.x / uOffset.y);
+    }
+	return r * glm::vec2(std::cos(theta), std::sin(theta));
+}
 /**
 * Generate PathSegments with rays from the camera through the screen into the
 * scene, which is the first bounce of rays.
@@ -165,11 +183,8 @@ void pathtraceFree()
 * motion blur - jitter rays "in time"
 * lens effect - jitter ray origin positions based on a lens
 */
-__global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, PathSegment* pathSegments)
+__global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, PathSegment* pathSegments, bool aa, bool dof)
 {
-    float dof = false;
-    float aa = false;
-
     int x = (blockIdx.x * blockDim.x) + threadIdx.x;
     int y = (blockIdx.y * blockDim.y) + threadIdx.y;
 
@@ -183,16 +198,6 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
             - cam.right * cam.pixelLength.x * ((float)x - (float)cam.resolution.x * 0.5f)
             - cam.up * cam.pixelLength.y * ((float)y - (float)cam.resolution.y * 0.5f)
         );
-
-        if (dof) {
-            // antialiasing by jittering the ray
-            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces);
-            thrust::uniform_real_distribution<float> lens(-0.15, 0.15);
-
-            segment.ray.origin = cam.position;
-            segment.ray.origin.x += lens(rng);
-            segment.ray.origin.y += lens(rng);
-        }
         if (aa) {
             // antialiasing by jittering the ray
             thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces - 1);
@@ -207,6 +212,19 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
                 - cam.up * cam.pixelLength.y * ((float)y + shiftUp - (float)cam.resolution.y * 0.5f)
             );
         }
+
+        if (dof && cam.aperture > 0.0f) {
+            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces - 2);
+            thrust::uniform_real_distribution<float> r01(-0.5, 0.5);
+
+			glm::vec2 sample = glm::vec2(r01(rng), r01(rng));
+            glm::vec2 randomLensPos = (cam.aperture/2.0f) * sampleUniformDiskConcentric(sample);
+            glm::vec3 pFocus = cam.position + segment.ray.direction * cam.focalDistance;
+
+            segment.ray.origin += cam.right * randomLensPos.x + cam.up * randomLensPos.y;
+            segment.ray.direction = glm::normalize(pFocus - segment.ray.origin);
+        }
+
 
         segment.pixelIndex = index;
         segment.remainingBounces = traceDepth;
@@ -306,6 +324,8 @@ __host__ __device__ glm::vec3 sampleSkybox(glm::vec3 dir) {
 __global__ void shadeBSDFMaterial(
     int iter,
     int num_paths,
+	int depth,
+    bool russianRouletteEnabled,
     ShadeableIntersection* shadeableIntersections,
     PathSegment* pathSegments,
     Material* materials)
@@ -362,6 +382,21 @@ __global__ void shadeBSDFMaterial(
             pathSegments[idx].color = colorTEST;
             pathSegments[idx].remainingBounces = 0;
         }
+    }
+    //Russian Roulette path termination https://visualcomp.ucsd.edu/classes/cse168/sp20/lectures/168-lecture8.pdf
+    if (russianRouletteEnabled && pathSegments[idx].remainingBounces > 0 && depth > 2)
+    {
+        thrust::default_random_engine rng = makeSeededRandomEngine(iter, idx, 0);
+        thrust::uniform_real_distribution<float> u01(0, 1);
+
+		//choose probability q inversly based on max color channel
+        float q = glm::clamp(1.0f - glm::max(pathSegments[idx].color.r, glm::max(pathSegments[idx].color.g, pathSegments[idx].color.b)), 0.05f, 0.95f);
+        if (u01(rng) < q) {
+            pathSegments[idx].remainingBounces = 0;
+        }
+        else {
+            pathSegments[idx].color /= (1.0f - q);
+		}
     }
 }
 
@@ -499,7 +534,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
     // TODO: perform one iteration of path tracing
 
-    generateRayFromCamera<<<blocksPerGrid2d, blockSize2d>>>(cam, iter, traceDepth, dev_paths);
+    generateRayFromCamera<<<blocksPerGrid2d, blockSize2d>>>(cam, iter, traceDepth, dev_paths, hst_scene->state.antialiasEnable, hst_scene->state.dofEnable);
     checkCUDAError("generate camera ray");
 
     int depth = 0;
@@ -556,6 +591,8 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         shadeBSDFMaterial<<<numblocksPathSegmentTracing, blockSize1d>>>(
             iter,
             num_paths,
+            depth,
+			hst_scene->state.russianRouletteEnable,
             dev_intersections,
             dev_paths,
             dev_materials
@@ -564,20 +601,15 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         cudaDeviceSynchronize();
 
         // stream compact based on remaining bounces of each ray
-        
-        //if (depth >= maxDepth) {
-        //    iterationComplete = true; // TODO: should be based off stream compaction results.
-        //}
 
-
-        PathSegment* dev_paths_updated_end = thrust::stable_partition(thrust::device,
-            dev_paths,
-            dev_paths + num_paths,
-            GetBounceNum());
-
-        
-        //PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
-        num_paths = dev_paths_updated_end - dev_paths;
+        if (hst_scene->state.streamCompactEnable) {
+            PathSegment* dev_paths_updated_end = thrust::stable_partition(thrust::device,
+                dev_paths,
+                dev_paths + num_paths,
+                GetBounceNum());
+            //PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
+            num_paths = dev_paths_updated_end - dev_paths;
+        }
 
         if (num_paths <= 0 || depth >= traceDepth)
         {
@@ -598,8 +630,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
     cudaDeviceSynchronize();
     ///////////////////////////////////////////////////////////////////////////
 
-    bool denoise = false; 
-    if (denoise && iter != 0)
+    if (hst_scene->state.denoiseEnable && iter != 0)
     {
         glm::vec3* dev_image_denoised = NULL; 
 

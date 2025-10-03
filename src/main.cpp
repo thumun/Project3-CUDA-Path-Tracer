@@ -356,9 +356,17 @@ int main(int argc, char** argv)
     //Create Instance for ImGUIData
     guiData = new GuiDataContainer();
 
+    renderState = &scene->state;
+
+	renderState->antialiasEnable = false;
+	renderState->dofEnable = false;
+	renderState->denoiseEnable = false;
+	renderState->streamCompactEnable = true;
+	renderState->russianRouletteEnable = true;
+
     // Set up camera stuff from loaded path tracer settings
     iteration = 0;
-    renderState = &scene->state;
+    
     Camera& cam = renderState->camera;
     width = cam.resolution.x;
     height = cam.resolution.y;
@@ -438,7 +446,6 @@ void runCuda()
         cam.position = cameraPosition;
         cameraPosition += cam.lookAt;
         cam.position = cameraPosition;
-        cam.focalDistance = glm::length(cam.position - cam.lookAt);
         camchanged = false;
     }
 
