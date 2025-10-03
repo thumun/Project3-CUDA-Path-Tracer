@@ -8,8 +8,10 @@ class Scene
 private:
     void loadFromJSON(const std::string& jsonName);
     bool loadFromOBJ(const std::string& fileName, Geom & geom);
+
 public:
     Scene(std::string filename);
+    BVHNode* buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth);
 
     std::vector<Geom> geoms;
     std::vector<Material> materials;

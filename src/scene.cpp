@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <glm/gtx/intersect.hpp>
 
 using namespace std;
 using json = nlohmann::json;
@@ -231,4 +232,107 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
     geom.boundsMax = maxBounds;
 
     return success;
+}
+
+BVHNode* Scene::buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth) {
+    if (end - start <= 0) return nullptr;
+
+    BVHNode* node = new BVHNode();
+    node->calculateBounds();
+
+    // Leaf node condition
+    if (end - start <= 4 || depth > 20) {
+        node->isLeaf = true;
+        node->triangles.assign(triangles.begin() + start, triangles.begin() + end);
+        return node;
+    }
+
+    // Find longest axis
+    glm::vec3 boundsSize = node->maxBounds - node->minBounds;
+    int axis = (boundsSize.x >= boundsSize.y && boundsSize.x >= boundsSize.z) ? 0 :
+        (boundsSize.y >= boundsSize.z) ? 1 : 2;
+
+    // Sort by centroid along longest axis
+    auto centroid = [](const Triangle& tri) {
+        return (tri.v0 + tri.v1 + tri.v2) / 3.0f;
+        };
+
+    std::sort(triangles.begin() + start, triangles.begin() + end,
+        [axis, centroid](const Triangle& a, const Triangle& b) {
+            return centroid(a)[axis] < centroid(b)[axis];
+        });
+
+    // Split at median
+    int mid = start + (end - start) / 2;
+
+    node->isLeaf = false;
+    node->leftChild = buildBVH(triangles, start, mid, depth + 1);
+    node->rightChild = buildBVH(triangles, mid, end, depth + 1);
+
+    return node;
+}
+
+bool boundingBoxCheck(
+    glm::vec3 rayOrig,
+    glm::vec3 rayDir,
+    glm::vec3 minB,
+    glm::vec3 maxB)
+{
+    float tmin = -1e38f;
+    float tmax = 1e38f;
+
+    for (int xyz = 0; xyz < 3; ++xyz)
+    {
+        float qdxyz = rayDir[xyz];
+        /*if (glm::abs(qdxyz) > 0.00001f)*/
+        {
+            float t1 = (minB[xyz] - rayOrig[xyz]) / qdxyz;
+            float t2 = (maxB[xyz] - rayOrig[xyz]) / qdxyz;
+            float ta = glm::min(t1, t2);
+            float tb = glm::max(t1, t2);
+            if (ta > 0 && ta > tmin)
+            {
+                tmin = ta;
+            }
+            if (tb < tmax)
+            {
+                tmax = tb;
+            }
+        }
+    }
+
+    if (tmax >= tmin && tmax > 0)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool intersectBVH(BVHNode* node, const Ray& ray) {
+    if (!node) {
+        return false;
+    }
+
+    if (!boundingBoxCheck(ray.origin, ray.direction, node->minBounds, node->maxBounds)) {
+        return false;
+    }
+
+    bool hit = false;
+
+    if (node->isLeaf) {
+        glm::vec3 bary;
+        bool hit = glm::intersectRayTriangle(ray.origin, ray.direction,
+            node->triangles[0].v0,
+            node->triangles[0].v1,
+            node->triangles[0].v2,
+            bary);
+    }
+    else {
+        bool hitLeft = intersectBVH(node->leftChild, ray);
+        bool hitRight = intersectBVH(node->rightChild, ray);
+        hit = hitLeft || hitRight;
+    }
+
+    return hit;
 }
