@@ -136,4 +136,6 @@ struct BVHNode {
 
     // only use for root!!
     int numNodes = -1;
+
+    int myIndex = -1;
 };

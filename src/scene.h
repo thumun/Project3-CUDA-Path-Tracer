@@ -11,7 +11,7 @@ private:
 
 public:
     Scene(std::string filename);
-    void buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth);
+    int buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth);
 
     std::vector<Geom> geoms;
     std::vector<Material> materials;

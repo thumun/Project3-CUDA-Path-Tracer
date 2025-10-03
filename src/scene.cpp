@@ -279,8 +279,8 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
     /*BVHNode& root = BVHNode();
     bvhNodes.push_back(root);*/
 
-    buildBVH(geomTriangles, 0, geomTriangles.size(), 0);
-    bvhNodes[0].numNodes = bvhNodes.size();
+    int rootIndex = buildBVH(geomTriangles, 0, geomTriangles.size(), 0);
+    bvhNodes[rootIndex].numNodes = bvhNodes.size();
 
     return success;
 }
@@ -304,54 +304,44 @@ void calculateBounds(std::vector<Triangle>& triangles, int start, int end, glm::
     }
 }
 
-void Scene::buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth) {
+int Scene::buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth) {
     // to set rt & left children of leaf
 
     if (start >= end) {
-        return;
+        return -1;
     }
 
     // BVHNode* current = &bvhNodes[bvhNodes.size() - 1];
 
     int currentNodeIndex = bvhNodes.size();
     bvhNodes.push_back(BVHNode());
-    BVHNode& current = bvhNodes[currentNodeIndex];
+    bvhNodes[currentNodeIndex].myIndex = currentNodeIndex;
 
-    calculateBounds(triangles, start, end, current.minBounds, current.maxBounds); // setting min max bounds
+    calculateBounds(triangles, start, end, bvhNodes[currentNodeIndex].minBounds, bvhNodes[currentNodeIndex].maxBounds); // setting min max bounds
 
     // leaf
     if (end - start <= 4 || depth > 20) {
-        current.isLeaf = true;
-        current.leftChild = -1;
-        current.rightChild = -1;
+        bvhNodes[currentNodeIndex].isLeaf = true;
+        bvhNodes[currentNodeIndex].leftChild = -1;
+        bvhNodes[currentNodeIndex].rightChild = -1;
 
         // need to get the triangles that are in this leaf chunk
-        current.triStart = start;
-        current.triEnd = end;
+        bvhNodes[currentNodeIndex].triStart = start;
+        bvhNodes[currentNodeIndex].triEnd = end;
 
-        return;
+        return currentNodeIndex;
     }
 
-    current.isLeaf = false;
+    bvhNodes[currentNodeIndex].isLeaf = false;
 
     // Split at median
     int mid = start + (end - start) / 2;
+    
+    bvhNodes[currentNodeIndex].leftChild = buildBVH(triangles, start, mid, depth + 1);
+    bvhNodes[currentNodeIndex].rightChild = buildBVH(triangles, mid, end, depth + 1);
 
-    current.leftChild = bvhNodes.size();
-    buildBVH(triangles, start, mid, depth + 1);
+    return currentNodeIndex;
 
-    current.rightChild = bvhNodes.size();
-    buildBVH(triangles, mid, end, depth + 1);
-
-    /*BVHNode& left = BVHNode();
-    bvhNodes.push_back(left);
-    current->leftChild = bvhNodes.size()-1;
-    buildBVH(triangles, start, mid, depth + 1);
-
-    BVHNode& right = BVHNode();
-    bvhNodes.push_back(right);
-    current->rightChild = bvhNodes.size() - 1;
-    buildBVH(triangles, mid, end, depth + 1);*/
 }
 
 //bool boundingBoxCheck(
