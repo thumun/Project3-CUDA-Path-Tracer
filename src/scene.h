@@ -12,6 +12,7 @@ private:
 public:
     Scene(std::string filename);
     BVHNode* buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth);
+    bool intersectBVH(BVHNode* node, const Ray& ray);
 
     std::vector<Geom> geoms;
     std::vector<Material> materials;
@@ -19,4 +20,6 @@ public:
     std::vector<glm::vec2> uvs; 
     std::vector<glm::vec3> verts; 
     RenderState state;
+
+    BVHNode* bvhRoot;
 };

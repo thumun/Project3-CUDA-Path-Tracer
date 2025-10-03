@@ -280,6 +280,12 @@ __global__ void computeIntersections(
             else if (geom.type == CUSTOM)
             {
                 t = triangleIntersectionTest(geom, pathSegment.ray, tmp_intersect, tmp_normal, tris);
+
+                /*
+                if (bool hit = intersectBVH(hst_scene->bvhRoot, pathSegment.ray)) {
+                    t = triangleIntersectionTest(geom, pathSegment.ray, tmp_intersect, tmp_normal, tris);
+                }
+                */
             }
 
             // TODO: add more intersection tests here... triangle? metaball? CSG?
@@ -552,6 +558,9 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
         // tracing
         dim3 numblocksPathSegmentTracing = (num_paths + blockSize1d - 1) / blockSize1d;
+
+        // hst_scene->intersectBVH(hst_scene->bvhRoot, );
+
         computeIntersections<<<numblocksPathSegmentTracing, blockSize1d>>> (
             depth,
             num_paths,

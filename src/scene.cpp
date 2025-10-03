@@ -245,22 +245,33 @@ bool Scene::loadFromOBJ(const std::string& fileName, Geom & geom)
     geom.boundsMin = minBounds;
     geom.boundsMax = maxBounds;
 
+    // setting up bvh
+    std::vector<Triangle> geomTriangles;
+    for (int i = geom.triOffset; i < geom.triOffset + geom.triCount; i++) {
+        geomTriangles.push_back(triangles[i]);
+    }
+
+    bvhRoot = buildBVH(geomTriangles, 0, geomTriangles.size(), 0);
+
     return success;
 }
 
 BVHNode* Scene::buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth) {
-    if (end - start <= 0) return nullptr;
+    // to set rt & left children of leaf
+    if (start >= end) return nullptr;
 
     BVHNode* node = new BVHNode();
+    node->triangles.assign(triangles.begin() + start, triangles.begin() + end);
     node->calculateBounds();
 
-    // Leaf node condition
+    // leaf
     if (end - start <= 4 || depth > 20) {
         node->isLeaf = true;
         node->triangles.assign(triangles.begin() + start, triangles.begin() + end);
         return node;
     }
 
+    // refactor below code
     // Find longest axis
     glm::vec3 boundsSize = node->maxBounds - node->minBounds;
     int axis = (boundsSize.x >= boundsSize.y && boundsSize.x >= boundsSize.z) ? 0 :
@@ -323,7 +334,8 @@ bool boundingBoxCheck(
     return false;
 }
 
-bool intersectBVH(BVHNode* node, const Ray& ray) {
+// need to edit this to match format of funcc in intersections
+bool Scene::intersectBVH(BVHNode* node, const Ray& ray) {
     if (!node) {
         return false;
     }
@@ -336,11 +348,14 @@ bool intersectBVH(BVHNode* node, const Ray& ray) {
 
     if (node->isLeaf) {
         glm::vec3 bary;
-        bool hit = glm::intersectRayTriangle(ray.origin, ray.direction,
-            node->triangles[0].v0,
-            node->triangles[0].v1,
-            node->triangles[0].v2,
-            bary);
+        for (auto const& t : node->triangles)
+        {
+            bool hit = glm::intersectRayTriangle(ray.origin, ray.direction,
+                t.v0,
+                t.v1,
+                t.v2,
+                bary);
+        }
     }
     else {
         bool hitLeft = intersectBVH(node->leftChild, ray);

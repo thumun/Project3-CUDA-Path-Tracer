@@ -119,18 +119,7 @@ struct ShadeableIntersection
   int materialId;
 };
 
-/*
-struct BVHNode
-{
-    glm::vec3 minBounds;
-    glm::vec3 maxBounds;
-    BVHNode* left;
-    BVHNode* right;
-    bool isLeaf;
-    std::vector<Triangle> triangles;
-};
-*/
-
+// need to gpu-ify it
 struct BVHNode {
     glm::vec3 minBounds;
     glm::vec3 maxBounds;
