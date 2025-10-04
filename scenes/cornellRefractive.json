@@ -30,12 +30,12 @@
         },
 	"specular_rough": {
             "TYPE": "Specular",
-            "RGB": [ 0.8, 0.2, 0.2 ],
+            "RGB": [ 0.98, 0.98, 0.98 ],
             "ROUGHNESS": 0.75
         },
         "specular_smooth": {
             "TYPE": "Specular",
-            "RGB": [ 0.2, 0.2, 0.78 ],
+            "RGB": [ 0.98, 0.98, 0.98 ],
             "ROUGHNESS": 0.25
         },
         "specular_mirror": {
@@ -51,6 +51,11 @@
     	"glass": {
       	     "TYPE": "Refractive",
       	     "RGB": [ 0.8, 0.8, 0.8 ],
+             "IOR": 2.0
+    	},
+	"blue_glass": {
+      	     "TYPE": "Refractive",
+      	     "RGB": [ 0.2, 0.2, 0.8 ],
              "IOR": 2.0
     	}
     },
@@ -113,15 +118,8 @@
         },
         {
             "TYPE":"sphere",
-            "MATERIAL":"diffuse_green",
+            "MATERIAL":"blue_glass",
             "TRANS":[0.0,5.0,0.0],
-            "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[3.0,3.0,3.0]
-        },
-        {
-            "TYPE":"sphere",
-            "MATERIAL":"specular_rough",
-            "TRANS":[3.0,4.0,3.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[3.0,3.0,3.0]
         }

@@ -30,12 +30,12 @@
         },
 	"specular_rough": {
             "TYPE": "Specular",
-            "RGB": [ 0.8, 0.2, 0.2 ],
+            "RGB": [ 0.98, 0.98, 0.98 ],
             "ROUGHNESS": 0.75
         },
         "specular_smooth": {
             "TYPE": "Specular",
-            "RGB": [ 0.2, 0.2, 0.78 ],
+            "RGB": [ 0.98, 0.98, 0.98 ],
             "ROUGHNESS": 0.25
         },
         "specular_mirror": {
@@ -43,27 +43,26 @@
             "RGB": [ 0.7, 0.7, 0.7 ],
             "ROUGHNESS": 0.0
         },
-        "transmissive_total": {
-            "TYPE": "Transmissive",
-            "RGB": [ 0.2, 0.8, 0.2 ],
-            "ROUGHNESS": 0.0,
-            "IOR": 1.33,
-            "TRANSMISSIVITY": 1.0
+        "specular_sliver": {
+           "TYPE": "Specular",
+           "RGB": [ 0.78, 0.86, 0.90 ],
+           "ROUGHNESS": 0.0
         },
-        "transmissive_partial": {
-            "TYPE": "Transmissive",
-            "RGB": [ 0.2, 0.8, 0.2 ],
-            "ROUGHNESS": 0.2,
-            "IOR": 1.33,
-            "TRANSMISSIVITY": 0.8
+        "specular_gold": {
+           "TYPE": "Specular",
+           "RGB": [ 0.9, 0.84, 0.10 ],
+           "ROUGHNESS": 0.0
         },
-        "transmissive_none": {
-            "TYPE": "Transmissive",
-            "RGB": [ 0.2, 0.8, 0.2 ],
-            "ROUGHNESS": 0.7,
-            "IOR": 1.33,
-            "TRANSMISSIVITY": 0.7
-        }
+    	"glass": {
+      	     "TYPE": "Refractive",
+      	     "RGB": [ 0.8, 0.8, 0.8 ],
+             "IOR": 2.0
+    	},
+	"blue_glass": {
+      	     "TYPE": "Refractive",
+      	     "RGB": [ 0.2, 0.2, 0.8 ],
+             "IOR": 2.0
+    	}
     },
     "Camera":
     {
@@ -82,7 +81,7 @@
         {
             "TYPE":"cube",
             "MATERIAL":"light",
-            "TRANS":[0.0,10.0,0.0],
+            "TRANS":[0.0,13.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[3.0,0.3,3.0]
         },
@@ -91,43 +90,43 @@
             "MATERIAL":"diffuse_white",
             "TRANS":[0.0,0.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[10.0,0.01,10.0]
+            "SCALE":[20.0,0.01,20.0]
         },
         {
             "TYPE":"cube",
             "MATERIAL":"diffuse_white",
-            "TRANS":[0.0,10.0,0.0],
+            "TRANS":[0.0,20.0,0.0],
             "ROTAT":[0.0,0.0,90.0],
-            "SCALE":[0.01,10.0,10.0]
+            "SCALE":[0.01,20.0,20.0]
         },
         {
             "TYPE":"cube",
             "MATERIAL":"diffuse_white",
-            "TRANS":[0.0,5.0,-5.0],
+            "TRANS":[0.0,10.0,-10.0],
             "ROTAT":[0.0,90.0,0.0],
-            "SCALE":[0.01,10.0,10.0]
+            "SCALE":[0.01,20.0,20.0]
         },
         {
             "TYPE":"cube",
             "MATERIAL":"diffuse_red",
-            "TRANS":[-5.0,5.0,0.0],
+            "TRANS":[-10.0,10.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[0.01,10.0,10.0]
+            "SCALE":[0.01,20.0,20.0]
         },
         {
             "TYPE":"cube",
             "MATERIAL":"diffuse_green",
-            "TRANS":[5.0,5.0,0.0],
+            "TRANS":[10.0,10.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
-            "SCALE":[0.01,10.0,10.0]
+            "SCALE":[0.01,20.0,20.0]
         },
         {
             "TYPE":"custom",
-            "MATERIAL":"diffuse_red",
-            "TRANS":[0.0,3.0,0.0],
+            "MATERIAL":"diffuse_green",
+            "TRANS":[0.0,1.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[1.0,1.0,1.0],
-            "FILE": "../scenes/cube.obj"
+            "FILE": "D:\\CGGT\\GPU_Programming\\Project3-CUDA-Path-Tracer\\scenes\\dragon.obj"
         }
         
     ]
