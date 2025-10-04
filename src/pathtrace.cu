@@ -181,6 +181,22 @@ __device__ glm::vec2 sampleUniformDiskConcentric(glm::vec2 u) {
     }
 	return r * glm::vec2(std::cos(theta), std::sin(theta));
 }
+
+//https://raytracing.github.io/books/RayTracingInOneWeekend.html#defocusblur
+__host__ __device__ glm::vec2 randomOnUnitCircle(thrust::default_random_engine& rng)
+{
+    thrust::uniform_real_distribution<float> u01(-1.0f, 1.0f);
+
+    while(true)
+    {
+        glm::vec2 p = glm::vec2(u01(rng), u01(rng));
+        if (glm::length(p) < 1.f)
+        {
+            return p;
+        }
+    }
+}
+
 /**
 * Generate PathSegments with rays from the camera through the screen into the
 * scene, which is the first bounce of rays.
@@ -204,9 +220,10 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
             - cam.right * cam.pixelLength.x * ((float)x - (float)cam.resolution.x * 0.5f)
             - cam.up * cam.pixelLength.y * ((float)y - (float)cam.resolution.y * 0.5f)
         );
+        thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, 0);
         if (aa) {
             // antialiasing by jittering the ray
-            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces - 1);
+
             thrust::uniform_real_distribution<float> u01x(0.0, cam.pixelLength.x);
             thrust::uniform_real_distribution<float> u01y(0.0, cam.pixelLength.y);
 
@@ -220,14 +237,13 @@ __global__ void generateRayFromCamera(Camera cam, int iter, int traceDepth, Path
         }
 
         if (dof && cam.aperture > 0.0f) {
-            thrust::default_random_engine rng = makeSeededRandomEngine(iter, index, segment.remainingBounces - 2);
             thrust::uniform_real_distribution<float> r01(-0.5, 0.5);
 
 			glm::vec2 sample = glm::vec2(r01(rng), r01(rng));
-            glm::vec2 randomLensPos = (cam.aperture/2.0f) * sampleUniformDiskConcentric(sample);
-            glm::vec3 pFocus = cam.position + segment.ray.direction * cam.focalDistance;
+            glm::vec2 randomLensPos = (cam.aperture) * sampleUniformDiskConcentric(sample);
+            segment.ray.origin = cam.position + cam.right * randomLensPos.x + cam.up * randomLensPos.y;
 
-            segment.ray.origin += cam.right * randomLensPos.x + cam.up * randomLensPos.y;
+            glm::vec3 pFocus = cam.position + segment.ray.direction * cam.focalDistance;
             segment.ray.direction = glm::normalize(pFocus - segment.ray.origin);
         }
 
@@ -248,6 +264,7 @@ __global__ void computeIntersections(
     Geom* geoms,
     int geoms_size,
     Triangle* tris,
+    bool boundingBox,
     ShadeableIntersection* intersections, 
     glm::vec3* norms, 
     glm::vec3* albedos,
@@ -292,8 +309,6 @@ __global__ void computeIntersections(
                     bvh,
                     0);*/
                 int nodeIdx = 1;
-
-                bool boundingBox = true;
 
                 if (nodeIdx > 0) {
                     t = triangleIntersectionTest(geom, pathSegment.ray, tmp_intersect, tmp_normal, tris, boundingBox);
@@ -550,7 +565,14 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
     // TODO: perform one iteration of path tracing
 
-    generateRayFromCamera<<<blocksPerGrid2d, blockSize2d>>>(cam, iter, traceDepth, dev_paths, hst_scene->state.antialiasEnable, hst_scene->state.dofEnable);
+    generateRayFromCamera<<<blocksPerGrid2d, blockSize2d>>>(
+        cam,
+        iter,
+        traceDepth,
+        dev_paths,
+        (guiData != NULL) ? guiData->enableAntialias : false,
+        (guiData != NULL) ? guiData->enableDof : false
+    );
     checkCUDAError("generate camera ray");
 
     int depth = 0;
@@ -569,8 +591,6 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         // tracing
         dim3 numblocksPathSegmentTracing = (num_paths + blockSize1d - 1) / blockSize1d;
 
-        // hst_scene->intersectBVH(hst_scene->bvhRoot, );
-
         computeIntersections<<<numblocksPathSegmentTracing, blockSize1d>>> (
             depth,
             num_paths,
@@ -578,6 +598,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
             dev_geoms,
             hst_scene->geoms.size(),
             dev_tris,
+            (guiData != NULL) ? guiData->enableBoundingBox : true,
             dev_intersections,
             dev_image_normals,
             dev_image_albedo,
@@ -612,7 +633,7 @@ void pathtrace(uchar4* pbo, int frame, int iter)
             iter,
             num_paths,
             depth,
-			hst_scene->state.russianRouletteEnable,
+            (guiData != NULL) ? guiData->enableRussianRoulette : false,
             dev_intersections,
             dev_paths,
             dev_materials
@@ -622,12 +643,11 @@ void pathtrace(uchar4* pbo, int frame, int iter)
 
         // stream compact based on remaining bounces of each ray
 
-        if (hst_scene->state.streamCompactEnable) {
+        if ((guiData != NULL) ? guiData->enableStreamCompact : false) {
             PathSegment* dev_paths_updated_end = thrust::stable_partition(thrust::device,
                 dev_paths,
                 dev_paths + num_paths,
                 GetBounceNum());
-            //PathSegment* dev_paths_updated_end = thrust::remove_if(thrust::device, dev_paths, dev_paths + num_paths, GetBounceNum());
             num_paths = dev_paths_updated_end - dev_paths;
         }
 
@@ -635,8 +655,6 @@ void pathtrace(uchar4* pbo, int frame, int iter)
         {
             iterationComplete = true;
         }
-
-        // iterationComplete = true; // TODO: should be based off stream compaction results.
 
         if (guiData != NULL)
         {
@@ -649,8 +667,8 @@ void pathtrace(uchar4* pbo, int frame, int iter)
     finalGather<<<numBlocksPixels, blockSize1d>>>(pixelcount, dev_image, dev_paths);
     cudaDeviceSynchronize();
     ///////////////////////////////////////////////////////////////////////////
-
-    if (hst_scene->state.denoiseEnable && iter != 0)
+	bool denoise = (guiData != NULL) ? guiData->enableDenoiser : false;
+    if (denoise && iter != 0)
     {
         glm::vec3* dev_image_denoised = NULL; 
 

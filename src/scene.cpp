@@ -304,6 +304,7 @@ void calculateBounds(std::vector<Triangle>& triangles, int start, int end, glm::
     }
 }
 
+// this works but not currently in use
 int Scene::buildBVH(std::vector<Triangle>& triangles, int start, int end, int depth) {
     // to set rt & left children of leaf
 

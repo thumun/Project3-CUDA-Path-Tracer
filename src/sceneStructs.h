@@ -94,11 +94,6 @@ struct RenderState
     std::string imageName;
 
 	//other render state parameters as needed
-	bool antialiasEnable = false;
-	bool dofEnable = false;
-	bool denoiseEnable = false;
-	bool streamCompactEnable = false;
-	bool russianRouletteEnable = false;
 };
 
 struct PathSegment
@@ -119,7 +114,6 @@ struct ShadeableIntersection
   int materialId;
 };
 
-// need to gpu-ify it
 struct BVHNode {
     glm::vec3 minBounds;
     glm::vec3 maxBounds;

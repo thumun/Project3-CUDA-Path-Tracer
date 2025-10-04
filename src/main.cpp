@@ -276,6 +276,12 @@ void RenderImGui()
     //ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
     //ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
     ImGui::Checkbox("Toggle Material Sort", &imguiData->toggleMaterialSort);
+    ImGui::Checkbox("Toggle Denoiser", &imguiData->enableDenoiser);
+    ImGui::Checkbox("Toggle AntiAliasing", &imguiData->enableAntialias);
+    ImGui::Checkbox("Toggle DOF", &imguiData->enableDof);
+    ImGui::Checkbox("Toggle Stream Compact", &imguiData->enableStreamCompact);
+    ImGui::Checkbox("Toggle Russian Roulette Path termination", &imguiData->enableRussianRoulette);
+    ImGui::Checkbox("Toggle Bounding Box", &imguiData->enableBoundingBox);
 
     //ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
     //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
@@ -356,17 +362,9 @@ int main(int argc, char** argv)
     //Create Instance for ImGUIData
     guiData = new GuiDataContainer();
 
-    renderState = &scene->state;
-
-	renderState->antialiasEnable = false;
-	renderState->dofEnable = false;
-	renderState->denoiseEnable = false;
-	renderState->streamCompactEnable = true;
-	renderState->russianRouletteEnable = true;
-
     // Set up camera stuff from loaded path tracer settings
     iteration = 0;
-    
+    renderState = &scene->state;
     Camera& cam = renderState->camera;
     width = cam.resolution.x;
     height = cam.resolution.y;

@@ -18,9 +18,24 @@
 class GuiDataContainer
 {
 public:
-    GuiDataContainer() : TracedDepth(0), toggleMaterialSort(false) {}
+    GuiDataContainer() :
+        TracedDepth(0),
+        toggleMaterialSort(false),
+        enableDenoiser(false),
+        enableAntialias(false),
+        enableDof(false),
+        enableStreamCompact(true),
+        enableRussianRoulette(false),
+        enableBoundingBox(false)
+    {}
     int TracedDepth;
     bool toggleMaterialSort;
+	bool enableDenoiser;
+	bool enableAntialias;
+	bool enableDof;
+	bool enableStreamCompact;
+	bool enableRussianRoulette;
+    bool enableBoundingBox;
 };
 
 namespace utilityCore

@@ -127,9 +127,6 @@ __host__ __device__ float triangleIntersectionTest(
     rt.origin = ro;
     rt.direction = rd;
 
-    //glm::vec3 bboxMin = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMin, 1.0f));
-    //glm::vec3 bboxMax = multiplyMV(geom.inverseTransform, glm::vec4(geom.boundsMax, 1.0f));
-
     // check bounding box first 
     bool isIntersect; 
 
@@ -166,42 +163,11 @@ __host__ __device__ float triangleIntersectionTest(
             normal = glm::normalize(multiplyMV(geom.invTranspose, glm::vec4(triNormalObj, 0.0f)));
             return glm::length(rt.origin - intersectionPoint);
         }
-        /*
-        for (int i = 0; i < geom.triCount; i++) {
-            glm::vec3 bary;
-
-            float hit = glm::intersectRayTriangle(rt.origin,
-                rt.direction,
-                tris[i + geom.triOffset].v0,
-                tris[i + geom.triOffset].v1,
-                tris[i + geom.triOffset].v2,
-                bary);
-
-            if (!hit) continue;
-
-            float t = bary.z;
-
-            if (t > 0.0f) {
-                glm::vec3 objspaceIntersection = getPointOnRay(rt, t);
-
-                intersectionPoint = multiplyMV(geom.transform, glm::vec4(objspaceIntersection, 1.0f));
-
-                glm::vec3 triNormalObj = tris[i + geom.triOffset].n;
-
-                normal = glm::normalize(multiplyMV(geom.invTranspose, glm::vec4(triNormalObj, 0.0f)));
-
-                return glm::length(rt.origin - intersectionPoint);
-            }
-
-        }
-        */
     }
 
     return -1;
 }
 
-// fix this hmmmm
-// prob world space obj space issue ughhh
 __host__ __device__
 bool intersectionBoundingBox(
     glm::vec3 rayOrig,
@@ -251,20 +217,20 @@ int meshIntersectionTest(
 
     BVHNode node = bvh[nodeIndx];
 
-        glm::vec3 ro = multiplyMV(geom.inverseTransform, glm::vec4(r.origin, 1.0f));
-        glm::vec3 rd = glm::normalize(multiplyMV(geom.inverseTransform, glm::vec4(r.direction, 0.0f)));
+    glm::vec3 ro = multiplyMV(geom.inverseTransform, glm::vec4(r.origin, 1.0f));
+    glm::vec3 rd = glm::normalize(multiplyMV(geom.inverseTransform, glm::vec4(r.direction, 0.0f)));
 
-        Ray rt;
-        rt.origin = ro;
-        rt.direction = rd;
+    Ray rt;
+    rt.origin = ro;
+    rt.direction = rd;
 
-        if (!intersectionBoundingBox(rt.origin, rt.direction, node.minBounds, node.maxBounds)) {
-        return -1;
-        }
+    if (!intersectionBoundingBox(rt.origin, rt.direction, node.minBounds, node.maxBounds)) {
+    return -1;
+    }
 
-        if (node.isLeaf) {
-            return node.myIndex;
-        }
+    if (node.isLeaf) {
+        return node.myIndex;
+    }
 
     int returnLeft = meshIntersectionTest(geom, r, bvh, node.leftChild);
     if (returnLeft == -1) {

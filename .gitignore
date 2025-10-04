@@ -560,3 +560,4 @@ xcuserdata
 
 !/external/**/*.dll
 !/external/**/*.lib
+!/scenes/**/*.obj
