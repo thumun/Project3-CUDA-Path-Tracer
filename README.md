@@ -70,7 +70,7 @@ Comparisons  |
 ### Depth of Field 
 Comparisons  |  
 :-------------------------:|
-<img width="400" height="400" alt="cornell 2025-10-05_00-49-51z 1021samp" src="https://github.com/user-attachments/assets/00979874-3bd4-4636-83ab-3f91441f7bd0" /> |
+![dof](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_00-49-51z.1021samp.png?raw=true) |
 
 - Depth of field !!
 
@@ -100,7 +100,7 @@ ADD EXPLANATION OF DENOISER
 
 Pre-denoise  |  Post-denoise  |
 :-------------------------:|:-------------------------:|
-![teapotpre](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-02_03-18-19z.27samp.png?raw=true) | ![teapotpost](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-02_03-25-18z.4samp.png?raw=true) |
+![reflectpre](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_00-38-26z.157samp.png?raw=true) | ![reflectpost](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_00-38-06z.161samp.png?raw=true) |
 
 An example of the denoiser at work with a sphere that has a fully reflective material. If enough time passes, the majority of the noise clears up in this situation but for the sake of this example, the snapshot was taken at approximately 60 iterations.
 
