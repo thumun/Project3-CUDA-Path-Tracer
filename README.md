@@ -44,10 +44,6 @@ This project is a CUDA based path tracer that is capable of the following: rende
 <img width="800" height="800" alt="specular_rough" src="https://github.com/user-attachments/assets/083aeb57-73c7-4f4d-a8f5-31771c81f02c" />
 <img width="800" height="800" alt="refractive" src="https://github.com/user-attachments/assets/4f7e9bf0-7cdc-46c8-b133-aef613164e9c" />
 
-<img width="800" height="800" alt="cornell 2025-10-05_03-46-44z 1025samp" src="https://github.com/user-attachments/assets/20df4d75-578f-48c3-9a3a-7cf0510d354f" />
-<img width="800" height="800" alt="cornell 2025-10-05_04-27-22z 408samp" src="https://github.com/user-attachments/assets/9efd9ee0-872c-4fb9-949b-eb856e709aa0" />
-
-
 ### Anti-Aliasing 
 <img width="800" height="800" alt="cornell 2025-10-05_00-22-14z 499samp" src="https://github.com/user-attachments/assets/1764c465-62d4-4cc2-9fa2-023384c912a8" />
 <img width="800" height="800" alt="cornell 2025-10-05_00-26-46z 494samp" src="https://github.com/user-attachments/assets/a21640ec-e70f-4a20-8101-afd64d28ab2c" />
@@ -59,6 +55,8 @@ This project is a CUDA based path tracer that is capable of the following: rende
 <img width="800" height="800" alt="cornell 2025-10-05_03-41-27z 1218samp" src="https://github.com/user-attachments/assets/8777b63f-ce31-40a7-b5b7-29943ee109ae" />
 <img width="800" height="800" alt="cornell 2025-10-05_03-46-44z 1025samp" src="https://github.com/user-attachments/assets/2ffca404-67d9-475c-bdc0-11af109a299c" />
 <img width="800" height="800" alt="cornell 2025-10-05_03-51-08z 1036samp" src="https://github.com/user-attachments/assets/1d0a1a20-d280-4ce7-9e87-fb2e0168d719" />
+<img width="800" height="800" alt="cornell 2025-10-05_04-03-20z 456samp" src="https://github.com/user-attachments/assets/f2573049-ef99-4b42-b261-8215a4f85e4c" />
+<img width="800" height="800" alt="cornell 2025-10-05_04-27-22z 408samp" src="https://github.com/user-attachments/assets/9efd9ee0-872c-4fb9-949b-eb856e709aa0" />
 
 #### Bounding Box Culling
 
