@@ -94,9 +94,7 @@ Here is another example of the dragon OBJ being loaded in with the complete refl
 
 #### Bounding Box Culling
 
-This is a toggle-able option that slightly increases the efficiency of the process due to not checking if the ray intersects with the triangles in the OBJ if the ray does not hit the bounding box of the object (within the min/max bounds). This is most visible in objects with greater numbers of triangles due to the current logic looping through all of the triangles to see if there is an intersection with the ray.
-
-ADD THE COMPARISON CHART
+This is a toggle-able option that slightly increases the efficiency of the process due to not checking if the ray intersects with the triangles in the OBJ if the ray does not hit the bounding box of the object (within the min/max bounds). This is most visible in objects with greater numbers of triangles due to the current logic looping through all of the triangles to see if there is an intersection with the ray. The performance analysis of this feature can be seen below!
 
 ### Denoiser 
 
@@ -116,9 +114,13 @@ An example of the denoiser in a more likely use case. The OBJ loading takes much
 
 ### Russian Roulette
 
-ADD EXPLANATION
+This is a method for termininating unimportant paths, those that will have a minimal contribution to the final output, early through random selection (in order to avoid bias). By using this method, the performance can improved as there are less rays being processed over all. The performance analysis of this feature can be seen below!
 
-ADD CHART
+### Performance Analysis 
+
+- need to check russian roulette, bounding box culling, material sort, stream compaction
+- needs to be closed and open box scene
+
 
 ## Misc cool images
 Infinity Cubes  |  Blue Skybox  |  Noir Film  |
