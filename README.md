@@ -7,7 +7,7 @@ CUDA Path Tracer
   * [LinkedIn](https://www.linkedin.com/in/neha-thumu/)
 * Tested on: Windows 11 Pro, i9-13900H @ 2.60GHz 32GB, Nvidia GeForce RTX 4070
 
-<img width="1200" height="1200" alt="cornell 2025-10-04_22-03-13z 12samp" src="https://github.com/user-attachments/assets/182ed5cf-34da-4e71-bb97-55a448c3bcff" />
+![dragonStart](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-04_22-03-13z.12samp.png?raw=true)
 
 ### Instructions to run this project
 
@@ -35,7 +35,7 @@ This project is a CUDA based path tracer written in C++. It is capable of render
 ### Supported Materials
 Diffuse  |  Emissive
 :-------------------------:|:-------------------------:
-<img width="800" height="800" alt="diffuse_white" src="https://github.com/user-attachments/assets/1e706625-46f3-423d-b5f8-57af722344b1" /> |  <img width="800" height="800" alt="cornell 2025-10-05_00-06-09z 1181samp" src="https://github.com/user-attachments/assets/91914576-ef3b-493a-abcf-90733e709bb4" />
+![diffuse](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/diffuse_white.png?raw=true) |  ![emissive](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_00-06-09z.1181samp.png?raw=true) |
 
 **Diffuse**: This type of material can take on the color of it's surroundings based on how the light reflects off of it. In order to get the matte effext, when the ray intersects with the diffuse object, it is reflected randomly using a cosine-weighted scatter function. (The diagram below contains a visual explanation of how rays are reflected.)
 
@@ -45,7 +45,7 @@ ADD DIAGRAM!!
 
 Reflective (0.0 Roughness)  |  Reflective (0.25 Roughness)  |  Reflective (0.75 Roughness)  |  
 :-------------------------:|:-------------------------:|:-------------------------:
-<img width="800" height="800" alt="specular_white" src="https://github.com/user-attachments/assets/5bc638a3-12ef-45ac-b456-ccd54cab350f" /> | <img width="800" height="800" alt="specular_smooth" src="https://github.com/user-attachments/assets/ad58b4ce-6239-4110-946c-51e730b42eea" /> | <img width="800" height="800" alt="specular_rough" src="https://github.com/user-attachments/assets/083aeb57-73c7-4f4d-a8f5-31771c81f02c" />
+![reflectZero](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/specular_white.png?raw=true) | ![reflectQuarter](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/specular_smooth.png?raw=true) | ![reflectThreeQuarters](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/specular_rough.png?raw=true) |
 
 **Reflective**: A completely reflective material (similar to the look of a shiny mirror) is created by having the ray bounce off of the surface based on the angle of the ray and the surface normal. (Or to have a more visual explanation, the reflected ray would be the (COLOR) arrow in the diagram below.) If the roughness is increased, this creates a fuzzy or blurred effect with the reflection that results in it looking more metallic.
 
@@ -53,7 +53,8 @@ ADD DIAGRAM!!
 
 Refractive  |  
 :-------------------------:|
-<img width="400" height="400" alt="refractive" src="https://github.com/user-attachments/assets/4f7e9bf0-7cdc-46c8-b133-aef613164e9c" /> |
+<img width="400" height="400" alt="refractive" src="https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/refractive.png?raw=true" /> |
+
 
 **Refractive**: Finally, we have the refractive or glass-like material! This utilizes Snell's law where we want to look at the angles formed based on the refracted ray and the normal (like in the diagram below). Then we use these angles along with the index of refraction (dependent on the materials the ray is going through) to figure out how the ray is refracted through the material.
 
@@ -62,7 +63,7 @@ ADD DIAGRAM!!
 ### Anti-Aliasing 
 Comparisons  |  
 :-------------------------:|
-<img width="2000" height="800" alt="aa" src="https://github.com/user-attachments/assets/f0e6cd0c-39ae-4adf-a872-04f8ffbafac4" /> |
+![aa](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/aa.png?raw=true) |
 
 **Anti-aliasing**: a toggle-able option within the GUI that prevents the rough edges between shapes by jittering the ray in order to sample the surrounding pixels. This sampling creates a smoother transition between shapes. In the image above, we can see that the no anti-aliasing image has clear lines that are not visible in the version with anti-aliasing.
 
@@ -77,13 +78,13 @@ Comparisons  |
 This OBJ loader utilized the [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader/tree/release) and supports triangulated OBJs. Only one obj may be loaded in at a time. The OBJ is loaded in by being added to the JSON file and the type being 'custom'. One important note is in debug mode and release mode there are different relative paths. The materials that can be applied to the default sphere and cube can be applied to the OBJ by adding to the Material field of the JSON file. 
 Diffuse  | Complete Reflection  |  Partial Reflection  |
 :-------------------------:|:-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-10-05_03-41-27z 1218samp" src="https://github.com/user-attachments/assets/8777b63f-ce31-40a7-b5b7-29943ee109ae" /> | <img width="800" height="800" alt="cornell 2025-10-05_03-46-44z 1025samp" src="https://github.com/user-attachments/assets/2ffca404-67d9-475c-bdc0-11af109a299c" /> | <img width="800" height="800" alt="cornell 2025-10-05_03-51-08z 1036samp" src="https://github.com/user-attachments/assets/1d0a1a20-d280-4ce7-9e87-fb2e0168d719" /> |
+![teapotdiff](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_03-41-27z.1218samp.png?raw=true) | ![teapotreflectall](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_03-46-44z.1025samp.png?raw=true) | ![teapotreflect](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_03-51-08z.1036samp.png?raw=true) |
 
 Here are some examples of the teapot OBJ being loaded in with different materials.
 
 Complete Reflection  |  Refraction  |
 :-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-10-05_04-03-20z 456samp" src="https://github.com/user-attachments/assets/f2573049-ef99-4b42-b261-8215a4f85e4c" /> | <img width="800" height="800" alt="cornell 2025-10-05_04-27-22z 408samp" src="https://github.com/user-attachments/assets/9efd9ee0-872c-4fb9-949b-eb856e709aa0" />
+![dragonreflect](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_04-03-20z.456samp.png?raw=true) | ![dragonrefract](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_04-27-22z.408samp.png?raw=true) |
 
 Here is another example of the dragon OBJ being loaded in with the complete reflection material (0.0 roughness) and the refraction material. There is slightly more noise here due to the number of iterations before the snapshot being less than above.
 
@@ -99,13 +100,13 @@ ADD EXPLANATION OF DENOISER
 
 Pre-denoise  |  Post-denoise  |
 :-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-10-05_00-38-26z 157samp" src="https://github.com/user-attachments/assets/b63acd67-b4e8-4c65-a87c-9c7c64da7ac3" /> | <img width="800" height="800" alt="cornell 2025-10-05_00-38-06z 161samp" src="https://github.com/user-attachments/assets/d59fe1bc-2dc5-4745-8be5-4e1740d94547" />
+![teapotpre](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-02_03-18-19z.27samp.png?raw=true) | ![teapotpost](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-02_03-25-18z.4samp.png?raw=true) |
 
 An example of the denoiser at work with a sphere that has a fully reflective material. If enough time passes, the majority of the noise clears up in this situation but for the sake of this example, the snapshot was taken at approximately 60 iterations.
 
 Pre-denoise  |  Post-denoise  |
 :-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-10-02_03-18-19z 27samp" src="https://github.com/user-attachments/assets/e2dc0e4b-af33-48c7-bf22-6e632d6c846c" /> | <img width="800" height="800" alt="cornell 2025-10-02_03-25-18z 4samp" src="https://github.com/user-attachments/assets/aafc34c9-5658-41f1-b957-a478049a20e6" />
+![teapotpre](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-02_03-18-19z.27samp.png?raw=true) | ![teapotpost](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-02_03-25-18z.4samp.png?raw=true) |
 
 An example of the denoiser in a more likely use case. The OBJ loading takes much longer due to the computation required for checking if there is an intersection between the rays and the triangles that compose the OBJ. As such, the noise does not clear up until approximately 600 or so iterations. This snapshot was taken at only 27 iterations!
 
@@ -118,19 +119,19 @@ ADD CHART
 ## Misc cool images
 Infinity Cubes  |  Blue Skybox  |  Noir Film  |
 :-------------------------:|:-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-10-03_00-33-38z 19samp" src="https://github.com/user-attachments/assets/f1dd9ce1-9bc7-4816-940a-44521ce501d7" /> | <img width="800" height="800" alt="cornell 2025-09-29_00-03-05z 102samp" src="https://github.com/user-attachments/assets/7ad3d781-9f45-4cf9-8b6c-49b2d927f5e8" /> | <img width="800" height="800" alt="cornell 2025-10-05_13-39-36z 1871samp" src="https://github.com/user-attachments/assets/a596ec36-10c9-449d-8725-2586f248622d" /> |
+![infinity](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-03_00-33-38z.19samp.png?raw=true) | ![skybox](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-09-29_00-03-05z.102samp.png?raw=true) | ![noir](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_13-39-36z.1871samp.png?raw=true) |
 
 ## Trials and Tribulations 
 
-During the somehwat turmulous process of creating this pathtracer (a fun challenge I will say!), there have been many curious bugs. Here are some of the more interesting ones! 
+During the somewhat turmulous process of creating this pathtracer (a fun challenge I will say!), there have been many curious bugs. Here are some of the more interesting ones! 
 
 Need to stream compact :)  |  Stream compact issues pt.1  |  Stream compact issues pt.2  |
 :-------------------------:|:-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-09-20_18-01-09z 46samp" src="https://github.com/user-attachments/assets/c77da368-d5c5-46e2-adc9-5b283f2debfd" /> | <img width="800" height="800" alt="cornell 2025-09-20_20-52-15z 61samp" src="https://github.com/user-attachments/assets/8278fdae-a75f-4f7c-8f70-31ee83ee6e3a" /> | <img width="800" height="800" alt="cornell 2025-09-20_22-23-09z 9samp" src="https://github.com/user-attachments/assets/b0560175-dabf-4627-812e-2604d9daa385" /> |
+![blownout](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-09-20_17-59-29z.36samp.png?raw=true) | ![stream1](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-09-20_20-52-15z.61samp.png?raw=true) | ![stream2](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-09-20_22-23-09z.9samp.png?raw=true) |
 
 Banding  |  Too close  |  Scale issue  |
 :-------------------------:|:-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-09-24_12-51-09z 61samp" src="https://github.com/user-attachments/assets/0d1a819b-2810-4b03-996e-8671abc0b6a3" /> | <img width="800" height="800" alt="cornell 2025-10-03_00-59-07z 102samp" src="https://github.com/user-attachments/assets/519733d6-7958-43dc-aa83-a35b682b673d" /> | <img width="800" height="800" alt="cornell 2025-09-29_00-31-04z 4samp" src="https://github.com/user-attachments/assets/f03ce25b-8a2e-4a80-bf10-68b5272695bb" /> |
+![banding](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-09-24_12-51-09z.61samp.png?raw=true) | ![close](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-03_00-59-07z.102samp.png?raw=true) | ![scale](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-09-29_00-31-04z.4samp.png?raw=true) |
 
 ### BVH 
 
