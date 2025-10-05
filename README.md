@@ -148,6 +148,8 @@ For ease of use, I edited the CMake so there is no need to manually copy the Den
 - Slides from 4610
 - BVH ([1](https://www.youtube.com/watch?v=LAxHQZ8RjQ4), [2](https://15362.courses.cs.cmu.edu/fall2025/lecture/lec-08), [3](https://jacco.ompf2.com/2022/04/13/how-to-build-a-bvh-part-1-basics/))
 - [Stanford Dragon OBJ](http://mrbluesummers.com/3572/downloads/stanford-dragon-model/)
+- [Teapot OBJ](https://graphics.stanford.edu/courses/cs148-10-summer/as3/code/as3/teapot.obj)
+- [Cube OBJ](https://gist.github.com/MaikKlein/0b6d6bb58772c13593d0a0add6004c1c)
 - [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader/tree/release)
 - [Paul Bourke's Notes](https://paulbourke.net/miscellaneous/raytracing/)
 - [AI Denoiser](https://github.com/RenderKit/oidn)
