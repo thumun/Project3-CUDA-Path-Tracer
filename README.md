@@ -72,11 +72,11 @@ Comparisons  |
 **Anti-aliasing**: a toggle-able option within the GUI that prevents the rough edges between shapes by jittering the ray in order to sample the surrounding pixels. This sampling creates a smoother transition between shapes. In the image above, we can see that the no anti-aliasing image has clear lines that are not visible in the version with anti-aliasing.
 
 ### Depth of Field 
-Comparisons  |  
-:-------------------------:|
-![dof](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_00-49-51z.1021samp.png?raw=true) |
+No DoF  | DoF  
+:-------------------------:|:-------------------------:|
+![nodof](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_21-23-41z.1092samp.png?raw=true) | ![dof](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_00-49-51z.1021samp.png?raw=true) |
 
-- Depth of field !!
+**Depth of field**: a toggle-able option within the GUI that mimics the function of an aperture in a real camera. Namely, an object can be in focus while other objects in the foreground/background (different z coordinates in our terms) would be blurred. This works by jittering rays based on a the diameter of the aperture. The camera is positioned based on a focal distance from the focus plane-objects in this plane would be in focus. 
 
 ### OBJ Loader 
 This OBJ loader utilized the [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader/tree/release) and supports triangulated OBJs. Only one obj may be loaded in at a time. The OBJ is loaded in by being added to the JSON file and the type being 'custom'. One important note is in debug mode and release mode there are different relative paths. The materials that can be applied to the default sphere and cube can be applied to the OBJ by adding to the Material field of the JSON file. 
@@ -98,7 +98,7 @@ This is a toggle-able option that slightly increases the efficiency of the proce
 
 ### Denoiser 
 
-The Denoiser uses [Intel's Open Image Denoise library](https://github.com/RenderKit/oidn) which utilizes deep learning to remove the noise from the images. This is dependent on a beauty filter (named color in my code) which uses the "noisy color" and the additional feature buffers (albedo and normals). The denoiser takes frames and processed them on the CPU side.
+The Denoiser uses [Intel's Open Image Denoise library](https://github.com/RenderKit/oidn) which utilizes deep learning to remove the noise from the images. This is dependent on a beauty filter (named color in my code) which uses the "noisy color" and the additional feature buffers (albedo and normals). The denoiser takes frames and processed them on the CPU side. This is a toggle-able option within the GUI.
 
 Pre-denoise  |  Post-denoise  |
 :-------------------------:|:-------------------------:|
@@ -114,9 +114,9 @@ An example of the denoiser in a more likely use case. The OBJ loading takes much
 
 ### Russian Roulette
 
-This is a method for termininating unimportant paths, those that will have a minimal contribution to the final output, early through random selection (in order to avoid bias). By using this method, the performance can improved as there are less rays being processed over all. The performance analysis of this feature can be seen below!
+This is a method for termininating unimportant paths, those that will have a minimal contribution to the final output, early through random selection (in order to avoid bias). By using this method, the performance can improved as there are less rays being processed over all. This is a toggle-able option within the GUI. The performance analysis of this feature can be seen below!
 
-### Performance Analysis 
+## Performance Analysis 
 
 - need to check russian roulette, bounding box culling, material sort, stream compaction
 - needs to be closed and open box scene
