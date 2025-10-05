@@ -67,9 +67,23 @@ This project is a CUDA based path tracer that is capable of the following: rende
 
 ### Russian Roulette
 
+## Misc cool images
+<img width="800" height="800" alt="cornell 2025-10-03_00-33-38z 19samp" src="https://github.com/user-attachments/assets/f1dd9ce1-9bc7-4816-940a-44521ce501d7" />
+<img width="800" height="800" alt="cornell 2025-09-29_00-03-05z 102samp" src="https://github.com/user-attachments/assets/7ad3d781-9f45-4cf9-8b6c-49b2d927f5e8" />
+<img width="800" height="800" alt="cornell 2025-09-30_22-11-51z 72samp" src="https://github.com/user-attachments/assets/ee080185-48b8-4097-84af-c07ecf83f46a" />
+
+
 ## Trials and Tribulations 
 
 During the somehwat turmulous process of creating this pathtracer (a fun challenge I will say!), there have been many curious bugs. Here are some of the more interesting ones! 
+
+<img width="800" height="800" alt="cornell 2025-09-20_18-01-09z 46samp" src="https://github.com/user-attachments/assets/c77da368-d5c5-46e2-adc9-5b283f2debfd" />
+<img width="800" height="800" alt="cornell 2025-09-20_20-52-15z 61samp" src="https://github.com/user-attachments/assets/8278fdae-a75f-4f7c-8f70-31ee83ee6e3a" />
+<img width="800" height="800" alt="cornell 2025-09-20_22-23-09z 9samp" src="https://github.com/user-attachments/assets/b0560175-dabf-4627-812e-2604d9daa385" />
+<img width="800" height="800" alt="cornell 2025-09-24_12-51-09z 61samp" src="https://github.com/user-attachments/assets/0d1a819b-2810-4b03-996e-8671abc0b6a3" />
+<img width="800" height="800" alt="cornell 2025-10-03_00-59-07z 102samp" src="https://github.com/user-attachments/assets/519733d6-7958-43dc-aa83-a35b682b673d" />
+<img width="800" height="800" alt="cornell 2025-09-29_00-31-04z 4samp" src="https://github.com/user-attachments/assets/f03ce25b-8a2e-4a80-bf10-68b5272695bb" />
+
 
 Notes about debugging/work::
 
