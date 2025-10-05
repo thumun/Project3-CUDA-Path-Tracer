@@ -44,19 +44,25 @@ This project is a CUDA based path tracer that is capable of the following: rende
 <img width="800" height="800" alt="refractive" src="https://github.com/user-attachments/assets/4f7e9bf0-7cdc-46c8-b133-aef613164e9c" />
 
 ### Anti-Aliasing 
+<img width="800" height="800" alt="cornell 2025-10-05_00-22-14z 499samp" src="https://github.com/user-attachments/assets/1764c465-62d4-4cc2-9fa2-023384c912a8" />
+<img width="800" height="800" alt="cornell 2025-10-05_00-26-46z 494samp" src="https://github.com/user-attachments/assets/a21640ec-e70f-4a20-8101-afd64d28ab2c" />
 
 ### Depth of Field 
 <img width="800" height="800" alt="cornell 2025-10-05_00-49-51z 1021samp" src="https://github.com/user-attachments/assets/00979874-3bd4-4636-83ab-3f91441f7bd0" />
 
 ### OBJ Loader 
-<img width="800" height="800" alt="cornell 2025-10-02_03-18-19z 27samp" src="https://github.com/user-attachments/assets/e2dc0e4b-af33-48c7-bf22-6e632d6c846c" />
-<img width="800" height="800" alt="cornell 2025-10-02_03-25-18z 4samp" src="https://github.com/user-attachments/assets/aafc34c9-5658-41f1-b957-a478049a20e6" />
+<img width="800" height="800" alt="cornell 2025-10-05_03-41-27z 1218samp" src="https://github.com/user-attachments/assets/8777b63f-ce31-40a7-b5b7-29943ee109ae" />
+<img width="800" height="800" alt="cornell 2025-10-05_03-46-44z 1025samp" src="https://github.com/user-attachments/assets/2ffca404-67d9-475c-bdc0-11af109a299c" />
+<img width="800" height="800" alt="cornell 2025-10-05_03-51-08z 1036samp" src="https://github.com/user-attachments/assets/1d0a1a20-d280-4ce7-9e87-fb2e0168d719" />
 
 #### Bounding Box Culling
 
 ### Denoiser 
 <img width="800" height="800" alt="cornell 2025-10-05_00-38-26z 157samp" src="https://github.com/user-attachments/assets/b63acd67-b4e8-4c65-a87c-9c7c64da7ac3" />
 <img width="800" height="800" alt="cornell 2025-10-05_00-38-06z 161samp" src="https://github.com/user-attachments/assets/d59fe1bc-2dc5-4745-8be5-4e1740d94547" />
+
+<img width="800" height="800" alt="cornell 2025-10-02_03-18-19z 27samp" src="https://github.com/user-attachments/assets/e2dc0e4b-af33-48c7-bf22-6e632d6c846c" />
+<img width="800" height="800" alt="cornell 2025-10-02_03-25-18z 4samp" src="https://github.com/user-attachments/assets/aafc34c9-5658-41f1-b957-a478049a20e6" />
 
 ### Russian Roulette
 
