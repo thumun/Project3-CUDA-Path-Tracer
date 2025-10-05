@@ -30,12 +30,12 @@
         },
 	"specular_rough": {
             "TYPE": "Specular",
-            "RGB": [ 0.98, 0.98, 0.98 ],
+            "RGB": [ 0.8, 0.2, 0.2 ],
             "ROUGHNESS": 0.75
         },
         "specular_smooth": {
             "TYPE": "Specular",
-            "RGB": [ 0.98, 0.98, 0.98 ],
+            "RGB": [ 0.2, 0.2, 0.78 ],
             "ROUGHNESS": 0.25
         },
         "specular_mirror": {
@@ -52,11 +52,6 @@
       	     "TYPE": "Refractive",
       	     "RGB": [ 0.8, 0.8, 0.8 ],
              "IOR": 2.0
-    	},
-	"blue_glass": {
-      	     "TYPE": "Refractive",
-      	     "RGB": [ 0.2, 0.2, 0.8 ],
-             "IOR": 2.0
     	}
     },
     "Camera":
@@ -69,8 +64,8 @@
         "EYE":[0.0,5.0,10.5],
         "LOOKAT":[0.0,5.0,0.0],
         "UP":[0.0,1.0,0.0],
-        "APERTURE": 1.0,
-        "FOCALDISTANCE": 1.0
+        "APERTURE": 0.25,
+        "FOCALDISTANCE": 5.5
     },
     "Objects":
     [
@@ -104,22 +99,50 @@
         },
         {
             "TYPE":"cube",
-            "MATERIAL":"specular_mirror",
+            "MATERIAL":"diffuse_red",
             "TRANS":[-5.0,5.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[0.01,10.0,10.0]
         },
         {
             "TYPE":"cube",
-            "MATERIAL":"glass",
+            "MATERIAL":"diffuse_green",
             "TRANS":[5.0,5.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[0.01,10.0,10.0]
         },
         {
             "TYPE":"sphere",
-            "MATERIAL":"glass",
-            "TRANS":[0.0,5.0,0.0],
+            "MATERIAL":"specular_rough",
+            "TRANS":[3.0,4.0,3.0],
+            "ROTAT":[0.0,0.0,0.0],
+            "SCALE":[3.0,3.0,3.0]
+        },
+        {
+            "TYPE":"cube",
+            "MATERIAL":"diffuse_white",
+            "TRANS":[3.0,4.0,3.0],
+            "ROTAT":[0.0,0.0,0.0],
+            "SCALE":[3.0,3.0,3.0]
+        },
+        {
+            "TYPE":"cube",
+            "MATERIAL":"diffuse_red",
+            "TRANS":[1.0,4.0,0.0],
+            "ROTAT":[0.0,0.0,0.0],
+            "SCALE":[3.0,3.0,3.0]
+        },
+        {
+            "TYPE":"cube",
+            "MATERIAL":"diffuse_green",
+            "TRANS":[-2.0,4.0,-3.0],
+            "ROTAT":[0.0,0.0,0.0],
+            "SCALE":[3.0,3.0,3.0]
+        },
+        {
+            "TYPE":"cube",
+            "MATERIAL":"diffuse_blue",
+            "TRANS":[-5.0,4.0,-6.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[3.0,3.0,3.0]
         }

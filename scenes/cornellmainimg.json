@@ -126,7 +126,7 @@
         },
         {
             "TYPE":"custom",
-            "MATERIAL":"specular_gold",
+            "MATERIAL":"glass",
             "TRANS":[0.0,2.0,0.0],
             "ROTAT":[0.0,0.0,0.0],
             "SCALE":[1.0,1.0,1.0],
