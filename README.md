@@ -41,9 +41,7 @@ Diffuse  |  Emissive
 :-------------------------:|:-------------------------:
 ![diffuse](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/diffuse_white.png?raw=true) |  ![emissive](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/cornell.2025-10-05_00-06-09z.1181samp.png?raw=true) |
 
-**Diffuse**: This type of material can take on the color of it's surroundings based on how the light reflects off of it. In order to get the matte effext, when the ray intersects with the diffuse object, it is reflected randomly using a cosine-weighted scatter function. (The diagram below contains a visual explanation of how rays are reflected.)
-
-ADD DIAGRAM!!
+**Diffuse**: This type of material can take on the color of it's surroundings based on how the light reflects off of it. In order to get the matte effext, when the ray intersects with the diffuse object, it is reflected randomly using a cosine-weighted scatter function. 
 
 **Emissive**: This is an example of how light sources behave within the pathtracer. If rays hit the light source, they stop bouncing otherwise there will be an extremely saturated render (see Trials and Tribulations for a visual example :) ). 
 
@@ -51,18 +49,13 @@ Reflective (0.0 Roughness)  |  Reflective (0.25 Roughness)  |  Reflective (0.75 
 :-------------------------:|:-------------------------:|:-------------------------:
 ![reflectZero](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/specular_white.png?raw=true) | ![reflectQuarter](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/specular_smooth.png?raw=true) | ![reflectThreeQuarters](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/specular_rough.png?raw=true) |
 
-**Reflective**: A completely reflective material (similar to the look of a shiny mirror) is created by having the ray bounce off of the surface based on the angle of the ray and the surface normal. (Or to have a more visual explanation, the reflected ray would be the (COLOR) arrow in the diagram below.) If the roughness is increased, this creates a fuzzy or blurred effect with the reflection that results in it looking more metallic.
-
-ADD DIAGRAM!!
+**Reflective**: A completely reflective material (similar to the look of a shiny mirror) is created by having the ray bounce off of the surface based on the angle of the ray and the surface normal. If the roughness is increased, this creates a fuzzy or blurred effect with the reflection that results in it looking more metallic.
 
 Refractive  |  
 :-------------------------:|
 <img width="400" height="400" alt="refractive" src="https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/refractive.png?raw=true" /> |
 
-
-**Refractive**: Finally, we have the refractive or glass-like material! This utilizes Snell's law where we want to look at the angles formed based on the refracted ray and the normal (like in the diagram below). Then we use these angles along with the index of refraction (dependent on the materials the ray is going through) to figure out how the ray is refracted through the material.
-
-ADD DIAGRAM!!
+**Refractive**: Finally, we have the refractive or glass-like material! This utilizes Snell's law where we want to look at the angles formed based on the refracted ray and the normal. Then we use these angles along with the index of refraction (dependent on the materials the ray is going through) to figure out how the ray is refracted through the material.
 
 ### Anti-Aliasing 
 Comparisons  |  
