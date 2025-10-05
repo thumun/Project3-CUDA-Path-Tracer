@@ -120,19 +120,15 @@ An example of the denoiser in a more likely use case. The OBJ loading takes much
 
 During the somehwat turmulous process of creating this pathtracer (a fun challenge I will say!), there have been many curious bugs. Here are some of the more interesting ones! 
 
-<img width="800" height="800" alt="cornell 2025-09-20_18-01-09z 46samp" src="https://github.com/user-attachments/assets/c77da368-d5c5-46e2-adc9-5b283f2debfd" />
-<img width="800" height="800" alt="cornell 2025-09-20_20-52-15z 61samp" src="https://github.com/user-attachments/assets/8278fdae-a75f-4f7c-8f70-31ee83ee6e3a" />
-<img width="800" height="800" alt="cornell 2025-09-20_22-23-09z 9samp" src="https://github.com/user-attachments/assets/b0560175-dabf-4627-812e-2604d9daa385" />
+Need to stream compact :)  |  Stream compact issues pt.1  |  Stream compact issues pt.2  |
+:-------------------------:|:-------------------------:|:-------------------------:|
+<img width="800" height="800" alt="cornell 2025-09-20_18-01-09z 46samp" src="https://github.com/user-attachments/assets/c77da368-d5c5-46e2-adc9-5b283f2debfd" /> | <img width="800" height="800" alt="cornell 2025-09-20_20-52-15z 61samp" src="https://github.com/user-attachments/assets/8278fdae-a75f-4f7c-8f70-31ee83ee6e3a" /> | <img width="800" height="800" alt="cornell 2025-09-20_22-23-09z 9samp" src="https://github.com/user-attachments/assets/b0560175-dabf-4627-812e-2604d9daa385" /> |
+
+Banding  |  Too close  |  Scale issue  |
+:-------------------------:|:-------------------------:|:-------------------------:|
 <img width="800" height="800" alt="cornell 2025-09-24_12-51-09z 61samp" src="https://github.com/user-attachments/assets/0d1a819b-2810-4b03-996e-8671abc0b6a3" />
 <img width="800" height="800" alt="cornell 2025-10-03_00-59-07z 102samp" src="https://github.com/user-attachments/assets/519733d6-7958-43dc-aa83-a35b682b673d" />
 <img width="800" height="800" alt="cornell 2025-09-29_00-31-04z 4samp" src="https://github.com/user-attachments/assets/f03ce25b-8a2e-4a80-bf10-68b5272695bb" />
-
-
-Notes about debugging/work::
-
-- first issue (inverse black white thing) -- wanted to check to see if code working after writing bsdf & launched to find crazy output; realized it wasn't due to the bsdf code but rather b/c I didn't do stream compaction (oops) 
-
-- second issue and an annoying one to fix: stream compaction -- had a slew of issues due to not doing stream compaction properly. Initial strat was to use remove_if which removes unnecessary data based on a predicate -> in my case, if 0 then don't need. This was a bad idea b/c then every ray that hits the light source get optimized away. I tried a weird idea of trying to keep track of rays that hit the light source but that was complicated and did not work out. Ended up restructuring to sorting the array based on a predicate (> 0). And num_paths based on part of partition that had non-light source data//data that I did not want to process. Had another bug where everything was blindingly bright! fixed this by realizing the final gather needed all the paths not just num paths.
 
 ### BVH 
 
