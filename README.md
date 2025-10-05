@@ -36,6 +36,7 @@ This project is a CUDA based path tracer that is capable of the following: rende
 
 <img width="800" height="800" alt="diffuse_white" src="https://github.com/user-attachments/assets/1e706625-46f3-423d-b5f8-57af722344b1" />
 
+<img width="800" height="800" alt="cornell 2025-10-05_00-06-09z 1181samp" src="https://github.com/user-attachments/assets/91914576-ef3b-493a-abcf-90733e709bb4" />
 
 ### Reflection & Refraction
 <img width="800" height="800" alt="specular_white" src="https://github.com/user-attachments/assets/5bc638a3-12ef-45ac-b456-ccd54cab350f" />
