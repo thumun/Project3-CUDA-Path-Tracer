@@ -112,9 +112,9 @@ An example of the denoiser in a more likely use case. The OBJ loading takes much
 ### Russian Roulette
 
 ## Misc cool images
-<img width="800" height="800" alt="cornell 2025-10-03_00-33-38z 19samp" src="https://github.com/user-attachments/assets/f1dd9ce1-9bc7-4816-940a-44521ce501d7" />
-<img width="800" height="800" alt="cornell 2025-09-29_00-03-05z 102samp" src="https://github.com/user-attachments/assets/7ad3d781-9f45-4cf9-8b6c-49b2d927f5e8" />
-<img width="800" height="800" alt="cornell 2025-10-05_13-39-36z 1871samp" src="https://github.com/user-attachments/assets/a596ec36-10c9-449d-8725-2586f248622d" />
+Infinity Cubes  |  Blue Skybox  |  Noir Film  |
+:-------------------------:|:-------------------------:|:-------------------------:|
+<img width="800" height="800" alt="cornell 2025-10-03_00-33-38z 19samp" src="https://github.com/user-attachments/assets/f1dd9ce1-9bc7-4816-940a-44521ce501d7" /> | <img width="800" height="800" alt="cornell 2025-09-29_00-03-05z 102samp" src="https://github.com/user-attachments/assets/7ad3d781-9f45-4cf9-8b6c-49b2d927f5e8" /> | <img width="800" height="800" alt="cornell 2025-10-05_13-39-36z 1871samp" src="https://github.com/user-attachments/assets/a596ec36-10c9-449d-8725-2586f248622d" /> |
 
 ## Trials and Tribulations 
 
@@ -126,9 +126,7 @@ Need to stream compact :)  |  Stream compact issues pt.1  |  Stream compact issu
 
 Banding  |  Too close  |  Scale issue  |
 :-------------------------:|:-------------------------:|:-------------------------:|
-<img width="800" height="800" alt="cornell 2025-09-24_12-51-09z 61samp" src="https://github.com/user-attachments/assets/0d1a819b-2810-4b03-996e-8671abc0b6a3" />
-<img width="800" height="800" alt="cornell 2025-10-03_00-59-07z 102samp" src="https://github.com/user-attachments/assets/519733d6-7958-43dc-aa83-a35b682b673d" />
-<img width="800" height="800" alt="cornell 2025-09-29_00-31-04z 4samp" src="https://github.com/user-attachments/assets/f03ce25b-8a2e-4a80-bf10-68b5272695bb" />
+<img width="800" height="800" alt="cornell 2025-09-24_12-51-09z 61samp" src="https://github.com/user-attachments/assets/0d1a819b-2810-4b03-996e-8671abc0b6a3" /> | <img width="800" height="800" alt="cornell 2025-10-03_00-59-07z 102samp" src="https://github.com/user-attachments/assets/519733d6-7958-43dc-aa83-a35b682b673d" /> | <img width="800" height="800" alt="cornell 2025-09-29_00-31-04z 4samp" src="https://github.com/user-attachments/assets/f03ce25b-8a2e-4a80-bf10-68b5272695bb" /> |
 
 ### BVH 
 
@@ -142,8 +140,10 @@ For ease of use, I edited the CMake so there is no need to manually copy the Den
 
 ## Resources Utilized 
 - [Raytracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
-- PBR textbook
+- [PBR textbook](https://pbr-book.org/4ed/Reflection_Models/Diffuse_Reflection)
 - Slides from 4610
-- BVH stuff
-- find links in code !!
-- Stanford Dragon OBJ
+- BVH ([1](https://www.youtube.com/watch?v=LAxHQZ8RjQ4), [2](https://15362.courses.cs.cmu.edu/fall2025/lecture/lec-08), [3](https://jacco.ompf2.com/2022/04/13/how-to-build-a-bvh-part-1-basics/))
+- [Stanford Dragon OBJ](http://mrbluesummers.com/3572/downloads/stanford-dragon-model/)
+- [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader/tree/release)
+- [Paul Bourke's Notes](https://paulbourke.net/miscellaneous/raytracing/)
+- [AI Denoiser](https://github.com/RenderKit/oidn)
