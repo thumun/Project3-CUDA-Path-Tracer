@@ -32,23 +32,22 @@ If you wish to edit the json files, an important note is the obj relative path d
 
 This project is a CUDA based path tracer written in C++. It is capable of rendering different types of materials (diffuse, reflective, and refractive), has OBJ support, has an AI based denoiser, a depth of field lens effect and various methods of increasing performance (bounding box culling for OBJ files and Russian Roulette path termination). 
 
-
 ### Supported Materials
 Diffuse  |  Emissive
 :-------------------------:|:-------------------------:
 <img width="800" height="800" alt="diffuse_white" src="https://github.com/user-attachments/assets/1e706625-46f3-423d-b5f8-57af722344b1" /> |  <img width="800" height="800" alt="cornell 2025-10-05_00-06-09z 1181samp" src="https://github.com/user-attachments/assets/91914576-ef3b-493a-abcf-90733e709bb4" />
 
-- Diffuse: This type of material can take on the color of it's surroundings based on how the light reflects off of it. In order to get the matte effext, when the ray intersects with the diffuse object, it is reflected randomly using a cosine-weighted scatter function. (The diagram below contains a visual explanation of how rays are reflected.)
+**Diffuse**: This type of material can take on the color of it's surroundings based on how the light reflects off of it. In order to get the matte effext, when the ray intersects with the diffuse object, it is reflected randomly using a cosine-weighted scatter function. (The diagram below contains a visual explanation of how rays are reflected.)
 
 ADD DIAGRAM!!
 
-- Emissive: This is an example of how light sources behave within the pathtracer. If rays hit the light source, they stop bouncing otherwise there will be an extremely saturated render (see Trials and Tribulations for a visual example :) ). 
+**Emissive**: This is an example of how light sources behave within the pathtracer. If rays hit the light source, they stop bouncing otherwise there will be an extremely saturated render (see Trials and Tribulations for a visual example :) ). 
 
 Reflective (0.0 Roughness)  |  Reflective (0.25 Roughness)  |  Reflective (0.75 Roughness)  |  
 :-------------------------:|:-------------------------:|:-------------------------:
 <img width="800" height="800" alt="specular_white" src="https://github.com/user-attachments/assets/5bc638a3-12ef-45ac-b456-ccd54cab350f" /> | <img width="800" height="800" alt="specular_smooth" src="https://github.com/user-attachments/assets/ad58b4ce-6239-4110-946c-51e730b42eea" /> | <img width="800" height="800" alt="specular_rough" src="https://github.com/user-attachments/assets/083aeb57-73c7-4f4d-a8f5-31771c81f02c" />
 
-- Reflective: A completely reflective material (similar to the look of a shiny mirror) is created by having the ray bounce off of the surface based on the angle of the ray and the surface normal. (Or to have a more visual explanation, the reflected ray would be the (COLOR) arrow in the diagram below.) If the roughness is increased, this creates a fuzzy or blurred effect with the reflection that results in it looking more metallic.
+**Reflective**: A completely reflective material (similar to the look of a shiny mirror) is created by having the ray bounce off of the surface based on the angle of the ray and the surface normal. (Or to have a more visual explanation, the reflected ray would be the (COLOR) arrow in the diagram below.) If the roughness is increased, this creates a fuzzy or blurred effect with the reflection that results in it looking more metallic.
 
 ADD DIAGRAM!!
 
@@ -56,7 +55,7 @@ Refractive  |
 :-------------------------:|
 <img width="400" height="400" alt="refractive" src="https://github.com/user-attachments/assets/4f7e9bf0-7cdc-46c8-b133-aef613164e9c" /> |
 
-- Refractive: Finally, we have the refractive or glass-like material! This utilizes Snell's law where we want to look at the angles formed based on the refracted ray and the normal (like in the diagram below). Then we use (FINISH EXPLANATION..)
+**Refractive**: Finally, we have the refractive or glass-like material! This utilizes Snell's law where we want to look at the angles formed based on the refracted ray and the normal (like in the diagram below). Then we use these angles along with the index of refraction (dependent on the materials the ray is going through) to figure out how the ray is refracted through the material.
 
 ADD DIAGRAM!!
 
@@ -65,26 +64,50 @@ Comparisons  |
 :-------------------------:|
 <img width="2000" height="800" alt="aa" src="https://github.com/user-attachments/assets/f0e6cd0c-39ae-4adf-a872-04f8ffbafac4" /> |
 
-- Anti-aliasing is a toggle-able option within the GUI ...
+**Anti-aliasing**: a toggle-able option within the GUI that prevents the rough edges between shapes by jittering the ray in order to sample the surrounding pixels. This sampling creates a smoother transition between shapes. In the image above, we can see that the no anti-aliasing image has clear lines that are not visible in the version with anti-aliasing.
 
 ### Depth of Field 
-<img width="800" height="800" alt="cornell 2025-10-05_00-49-51z 1021samp" src="https://github.com/user-attachments/assets/00979874-3bd4-4636-83ab-3f91441f7bd0" />
+Comparisons  |  
+:-------------------------:|
+<img width="400" height="400" alt="cornell 2025-10-05_00-49-51z 1021samp" src="https://github.com/user-attachments/assets/00979874-3bd4-4636-83ab-3f91441f7bd0" /> |
+
+- Depth of field !!
 
 ### OBJ Loader 
-<img width="800" height="800" alt="cornell 2025-10-05_03-41-27z 1218samp" src="https://github.com/user-attachments/assets/8777b63f-ce31-40a7-b5b7-29943ee109ae" />
-<img width="800" height="800" alt="cornell 2025-10-05_03-46-44z 1025samp" src="https://github.com/user-attachments/assets/2ffca404-67d9-475c-bdc0-11af109a299c" />
-<img width="800" height="800" alt="cornell 2025-10-05_03-51-08z 1036samp" src="https://github.com/user-attachments/assets/1d0a1a20-d280-4ce7-9e87-fb2e0168d719" />
-<img width="800" height="800" alt="cornell 2025-10-05_04-03-20z 456samp" src="https://github.com/user-attachments/assets/f2573049-ef99-4b42-b261-8215a4f85e4c" />
-<img width="800" height="800" alt="cornell 2025-10-05_04-27-22z 408samp" src="https://github.com/user-attachments/assets/9efd9ee0-872c-4fb9-949b-eb856e709aa0" />
+This OBJ loader utilized the tinyOBJLoader and supports triangulated OBJs. Only one obj may be loaded in at a time. The OBJ is loaded in by being added to the JSON file and the type being 'custom'. One important note is in debug mode and release mode there are different relative paths. The materials that can be applied to the default sphere and cube can be applied to the OBJ by adding to the Material field of the JSON file. 
+Diffuse  | Complete Reflection  |  Partial Reflection  |
+:-------------------------:|:-------------------------:|:-------------------------:|
+<img width="800" height="800" alt="cornell 2025-10-05_03-41-27z 1218samp" src="https://github.com/user-attachments/assets/8777b63f-ce31-40a7-b5b7-29943ee109ae" /> | <img width="800" height="800" alt="cornell 2025-10-05_03-46-44z 1025samp" src="https://github.com/user-attachments/assets/2ffca404-67d9-475c-bdc0-11af109a299c" /> | <img width="800" height="800" alt="cornell 2025-10-05_03-51-08z 1036samp" src="https://github.com/user-attachments/assets/1d0a1a20-d280-4ce7-9e87-fb2e0168d719" /> |
+
+Here are some examples of the teapot OBJ being loaded in with different materials.
+
+Complete Reflection  |  Refraction  |
+:-------------------------:|:-------------------------:|
+<img width="800" height="800" alt="cornell 2025-10-05_04-03-20z 456samp" src="https://github.com/user-attachments/assets/f2573049-ef99-4b42-b261-8215a4f85e4c" /> | <img width="800" height="800" alt="cornell 2025-10-05_04-27-22z 408samp" src="https://github.com/user-attachments/assets/9efd9ee0-872c-4fb9-949b-eb856e709aa0" />
+
+Here is another example of the dragon OBJ being loaded in with the complete reflection material (0.0 roughness) and the refraction material. There is slightly more noise here due to the number of iterations before the snapshot being less than above.
 
 #### Bounding Box Culling
 
-### Denoiser 
-<img width="800" height="800" alt="cornell 2025-10-05_00-38-26z 157samp" src="https://github.com/user-attachments/assets/b63acd67-b4e8-4c65-a87c-9c7c64da7ac3" />
-<img width="800" height="800" alt="cornell 2025-10-05_00-38-06z 161samp" src="https://github.com/user-attachments/assets/d59fe1bc-2dc5-4745-8be5-4e1740d94547" />
+This is a toggle-able option that slightly increases the efficiency of the process due to not checking if the ray intersects with the triangles in the OBJ if the ray does not hit the bounding box of the object (within the min/max bounds). This is most visible in objects with greater numbers of triangles due to the current logic looping through all of the triangles to see if there is an intersection with the ray.
 
-<img width="800" height="800" alt="cornell 2025-10-02_03-18-19z 27samp" src="https://github.com/user-attachments/assets/e2dc0e4b-af33-48c7-bf22-6e632d6c846c" />
-<img width="800" height="800" alt="cornell 2025-10-02_03-25-18z 4samp" src="https://github.com/user-attachments/assets/aafc34c9-5658-41f1-b957-a478049a20e6" />
+ADD THE COMPARISON CHART
+
+### Denoiser 
+
+ADD EXPLANATION OF DENOISER
+
+Pre-denoise  |  Post-denoise  |
+:-------------------------:|:-------------------------:|
+<img width="800" height="800" alt="cornell 2025-10-05_00-38-26z 157samp" src="https://github.com/user-attachments/assets/b63acd67-b4e8-4c65-a87c-9c7c64da7ac3" /> | <img width="800" height="800" alt="cornell 2025-10-05_00-38-06z 161samp" src="https://github.com/user-attachments/assets/d59fe1bc-2dc5-4745-8be5-4e1740d94547" />
+
+An example of the denoiser at work with a sphere that has a fully reflective material. If enough time passes, the majority of the noise clears up in this situation but for the sake of this example, the snapshot was taken at approximately 60 iterations.
+
+Pre-denoise  |  Post-denoise  |
+:-------------------------:|:-------------------------:|
+<img width="800" height="800" alt="cornell 2025-10-02_03-18-19z 27samp" src="https://github.com/user-attachments/assets/e2dc0e4b-af33-48c7-bf22-6e632d6c846c" /> | <img width="800" height="800" alt="cornell 2025-10-02_03-25-18z 4samp" src="https://github.com/user-attachments/assets/aafc34c9-5658-41f1-b957-a478049a20e6" />
+
+An example of the denoiser in a more likely use case. The OBJ loading takes much longer due to the computation required for checking if there is an intersection between the rays and the triangles that compose the OBJ. As such, the noise does not clear up until approximately 600 or so iterations. This snapshot was taken at only 27 iterations!
 
 ### Russian Roulette
 
