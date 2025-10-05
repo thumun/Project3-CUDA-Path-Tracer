@@ -74,7 +74,7 @@ Comparisons  |
 - Depth of field !!
 
 ### OBJ Loader 
-This OBJ loader utilized the tinyOBJLoader and supports triangulated OBJs. Only one obj may be loaded in at a time. The OBJ is loaded in by being added to the JSON file and the type being 'custom'. One important note is in debug mode and release mode there are different relative paths. The materials that can be applied to the default sphere and cube can be applied to the OBJ by adding to the Material field of the JSON file. 
+This OBJ loader utilized the [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader/tree/release) and supports triangulated OBJs. Only one obj may be loaded in at a time. The OBJ is loaded in by being added to the JSON file and the type being 'custom'. One important note is in debug mode and release mode there are different relative paths. The materials that can be applied to the default sphere and cube can be applied to the OBJ by adding to the Material field of the JSON file. 
 Diffuse  | Complete Reflection  |  Partial Reflection  |
 :-------------------------:|:-------------------------:|:-------------------------:|
 <img width="800" height="800" alt="cornell 2025-10-05_03-41-27z 1218samp" src="https://github.com/user-attachments/assets/8777b63f-ce31-40a7-b5b7-29943ee109ae" /> | <img width="800" height="800" alt="cornell 2025-10-05_03-46-44z 1025samp" src="https://github.com/user-attachments/assets/2ffca404-67d9-475c-bdc0-11af109a299c" /> | <img width="800" height="800" alt="cornell 2025-10-05_03-51-08z 1036samp" src="https://github.com/user-attachments/assets/1d0a1a20-d280-4ce7-9e87-fb2e0168d719" /> |
@@ -110,6 +110,10 @@ Pre-denoise  |  Post-denoise  |
 An example of the denoiser in a more likely use case. The OBJ loading takes much longer due to the computation required for checking if there is an intersection between the rays and the triangles that compose the OBJ. As such, the noise does not clear up until approximately 600 or so iterations. This snapshot was taken at only 27 iterations!
 
 ### Russian Roulette
+
+ADD EXPLANATION
+
+ADD CHART
 
 ## Misc cool images
 Infinity Cubes  |  Blue Skybox  |  Noir Film  |
