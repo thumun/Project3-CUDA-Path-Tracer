@@ -24,9 +24,13 @@ If you wish to edit the json files, an important note is the obj relative path d
 
 ### Included in the Repository 
 
-- Cube OBJ file (from here)
-- Teapot OBJ file (from here)
-- list the JSON files & what they do !! 
+- [cornellRefractive.json](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/scenes/cornellRefractive.json) (for the refractive/reflective tests)
+- [cornellobj.json](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/scenes/cornellobj.json) (for object loading)
+- [dof.json](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/scenes/dof.json) (for the dof scene)
+- [cornellmainimg.json](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/scenes/cornellmainimg.json) (for reproducing the header image of the readme)
+- Cube OBJ file
+- Teapot OBJ file
+- Dragon OBJ file
 
 ## Project Details 
 
@@ -96,7 +100,7 @@ ADD THE COMPARISON CHART
 
 ### Denoiser 
 
-ADD EXPLANATION OF DENOISER
+The Denoiser uses [Intel's Open Image Denoise library](https://github.com/RenderKit/oidn) which utilizes deep learning to remove the noise from the images. This is dependent on a beauty filter (named color in my code) which uses the "noisy color" and the additional feature buffers (albedo and normals). The denoiser takes frames and processed them on the CPU side.
 
 Pre-denoise  |  Post-denoise  |
 :-------------------------:|:-------------------------:|
@@ -154,3 +158,5 @@ For ease of use, I edited the CMake so there is no need to manually copy the Den
 - [TinyOBJLoader](https://github.com/tinyobjloader/tinyobjloader/tree/release)
 - [Paul Bourke's Notes](https://paulbourke.net/miscellaneous/raytracing/)
 - [AI Denoiser](https://github.com/RenderKit/oidn)
+- [Russian Roulette](https://visualcomp.ucsd.edu/classes/cse168/sp20/lectures/168-lecture8.pdf)
+- [DoF helper](https://pbr-book.org/4ed/Sampling_Algorithms/Sampling_Multidimensional_Functions#SampleUniformDiskConcentric)
