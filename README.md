@@ -30,23 +30,42 @@ If you wish to edit the json files, an important note is the obj relative path d
 
 ## Project Details 
 
-This project is a CUDA based path tracer that is capable of the following: render different materials (namely diffuse and transmissive), load OBJ models (it can be a bit slow with larger models as a warning), use an AI based denoiser, have a depth of field effect and provide different ways to increase performance. 
+This project is a CUDA based path tracer written in C++. It is capable of rendering different types of materials (diffuse, reflective, and refractive), has OBJ support, has an AI based denoiser, a depth of field lens effect and various methods of increasing performance (bounding box culling for OBJ files and Russian Roulette path termination). 
 
-### Diffuse Material 
 
-<img width="800" height="800" alt="diffuse_white" src="https://github.com/user-attachments/assets/1e706625-46f3-423d-b5f8-57af722344b1" />
+### Supported Materials
+Diffuse  |  Emissive
+:-------------------------:|:-------------------------:
+<img width="800" height="800" alt="diffuse_white" src="https://github.com/user-attachments/assets/1e706625-46f3-423d-b5f8-57af722344b1" /> |  <img width="800" height="800" alt="cornell 2025-10-05_00-06-09z 1181samp" src="https://github.com/user-attachments/assets/91914576-ef3b-493a-abcf-90733e709bb4" />
 
-<img width="800" height="800" alt="cornell 2025-10-05_00-06-09z 1181samp" src="https://github.com/user-attachments/assets/91914576-ef3b-493a-abcf-90733e709bb4" />
+- Diffuse: This type of material can take on the color of it's surroundings based on how the light reflects off of it. In order to get the matte effext, when the ray intersects with the diffuse object, it is reflected randomly using a cosine-weighted scatter function. (The diagram below contains a visual explanation of how rays are reflected.)
 
-### Reflection & Refraction
-<img width="800" height="800" alt="specular_white" src="https://github.com/user-attachments/assets/5bc638a3-12ef-45ac-b456-ccd54cab350f" />
-<img width="800" height="800" alt="specular_smooth" src="https://github.com/user-attachments/assets/ad58b4ce-6239-4110-946c-51e730b42eea" />
-<img width="800" height="800" alt="specular_rough" src="https://github.com/user-attachments/assets/083aeb57-73c7-4f4d-a8f5-31771c81f02c" />
-<img width="800" height="800" alt="refractive" src="https://github.com/user-attachments/assets/4f7e9bf0-7cdc-46c8-b133-aef613164e9c" />
+ADD DIAGRAM!!
+
+- Emissive: This is an example of how light sources behave within the pathtracer. If rays hit the light source, they stop bouncing otherwise there will be an extremely saturated render (see Trials and Tribulations for a visual example :) ). 
+
+Reflective (0.0 Roughness)  |  Reflective (0.25 Roughness)  |  Reflective (0.75 Roughness)  |  
+:-------------------------:|:-------------------------:|:-------------------------:
+<img width="800" height="800" alt="specular_white" src="https://github.com/user-attachments/assets/5bc638a3-12ef-45ac-b456-ccd54cab350f" /> | <img width="800" height="800" alt="specular_smooth" src="https://github.com/user-attachments/assets/ad58b4ce-6239-4110-946c-51e730b42eea" /> | <img width="800" height="800" alt="specular_rough" src="https://github.com/user-attachments/assets/083aeb57-73c7-4f4d-a8f5-31771c81f02c" />
+
+- Reflective: A completely reflective material (similar to the look of a shiny mirror) is created by having the ray bounce off of the surface based on the angle of the ray and the surface normal. (Or to have a more visual explanation, the reflected ray would be the (COLOR) arrow in the diagram below.) If the roughness is increased, this creates a fuzzy or blurred effect with the reflection that results in it looking more metallic.
+
+ADD DIAGRAM!!
+
+Refractive  |  
+:-------------------------:|
+<img width="400" height="400" alt="refractive" src="https://github.com/user-attachments/assets/4f7e9bf0-7cdc-46c8-b133-aef613164e9c" /> |
+
+- Refractive: Finally, we have the refractive or glass-like material! This utilizes Snell's law where we want to look at the angles formed based on the refracted ray and the normal (like in the diagram below). Then we use (FINISH EXPLANATION..)
+
+ADD DIAGRAM!!
 
 ### Anti-Aliasing 
-<img width="800" height="800" alt="cornell 2025-10-05_00-22-14z 499samp" src="https://github.com/user-attachments/assets/1764c465-62d4-4cc2-9fa2-023384c912a8" />
-<img width="800" height="800" alt="cornell 2025-10-05_00-26-46z 494samp" src="https://github.com/user-attachments/assets/a21640ec-e70f-4a20-8101-afd64d28ab2c" />
+Comparisons  |  
+:-------------------------:|
+<img width="2000" height="800" alt="aa" src="https://github.com/user-attachments/assets/f0e6cd0c-39ae-4adf-a872-04f8ffbafac4" /> |
+
+- Anti-aliasing is a toggle-able option within the GUI ...
 
 ### Depth of Field 
 <img width="800" height="800" alt="cornell 2025-10-05_00-49-51z 1021samp" src="https://github.com/user-attachments/assets/00979874-3bd4-4636-83ab-3f91441f7bd0" />
