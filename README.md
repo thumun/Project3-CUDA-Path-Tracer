@@ -32,6 +32,33 @@ If you wish to edit the json files, an important note is the obj relative path d
 
 This project is a CUDA based path tracer that is capable of the following: render different materials (namely diffuse and transmissive), load OBJ models (it can be a bit slow with larger models as a warning), use an AI based denoiser, have a depth of field effect and provide different ways to increase performance. 
 
+### Diffuse Material 
+
+<img width="800" height="800" alt="diffuse_white" src="https://github.com/user-attachments/assets/1e706625-46f3-423d-b5f8-57af722344b1" />
+
+
+### Reflection & Refraction
+<img width="800" height="800" alt="specular_white" src="https://github.com/user-attachments/assets/5bc638a3-12ef-45ac-b456-ccd54cab350f" />
+<img width="800" height="800" alt="specular_smooth" src="https://github.com/user-attachments/assets/ad58b4ce-6239-4110-946c-51e730b42eea" />
+<img width="800" height="800" alt="specular_rough" src="https://github.com/user-attachments/assets/083aeb57-73c7-4f4d-a8f5-31771c81f02c" />
+<img width="800" height="800" alt="refractive" src="https://github.com/user-attachments/assets/4f7e9bf0-7cdc-46c8-b133-aef613164e9c" />
+
+### Anti-Aliasing 
+
+### Depth of Field 
+<img width="800" height="800" alt="cornell 2025-10-05_00-49-51z 1021samp" src="https://github.com/user-attachments/assets/00979874-3bd4-4636-83ab-3f91441f7bd0" />
+
+### OBJ Loader 
+<img width="800" height="800" alt="cornell 2025-10-02_03-18-19z 27samp" src="https://github.com/user-attachments/assets/e2dc0e4b-af33-48c7-bf22-6e632d6c846c" />
+<img width="800" height="800" alt="cornell 2025-10-02_03-25-18z 4samp" src="https://github.com/user-attachments/assets/aafc34c9-5658-41f1-b957-a478049a20e6" />
+
+#### Bounding Box Culling
+
+### Denoiser 
+<img width="800" height="800" alt="cornell 2025-10-05_00-38-26z 157samp" src="https://github.com/user-attachments/assets/b63acd67-b4e8-4c65-a87c-9c7c64da7ac3" />
+<img width="800" height="800" alt="cornell 2025-10-05_00-38-06z 161samp" src="https://github.com/user-attachments/assets/d59fe1bc-2dc5-4745-8be5-4e1740d94547" />
+
+### Russian Roulette
 
 ## Trials and Tribulations 
 
@@ -59,3 +86,4 @@ For ease of use, I edited the CMake so there is no need to manually copy the Den
 - Slides from 4610
 - BVH stuff
 - find links in code !!
+- Stanford Dragon OBJ
