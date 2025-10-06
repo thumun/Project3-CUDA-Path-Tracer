@@ -111,9 +111,16 @@ This is a method for termininating unimportant paths, those that will have a min
 
 ## Performance Analysis 
 
-- need to check russian roulette, bounding box culling, material sort, stream compaction
-- needs to be closed and open box scene
+This performance analysis of the various methods is done with the teapot Obj with a specular material attached to it while in the cornell box. The closed box variation is simply the cornell box but with a 6th face. For the FPS chart, a higher FPS means a better method while if there are more Milliseconds taken per Frame that means that is a worse method.
 
+![fps](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/fps.png?raw=true)
+![msframe](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/msperframe.png?raw=true)
+
+![chart](test
+
+In the open box scenario, stream compaction makes a dramatic difference compared to all the methods however bounding box does come close. This is most likely due to the fact that when rays don't hit any of our objects, they are stream compacted away as such there are less rays in the next iteration to compute. The bounding box is most likely a performance boost due to ignoring the rather arduous calculation of seeing if the ray intersects with one of the faces of the obj. The russian roulette and material sort methods do not have as much of an impact but are certainly better than the basic (no methods). And of course, all of the methods together result in the best FPS and lowest ms/frame for the open box. 
+
+In the closed box scenario, the differences are less drastic as in the open box case. Stream compaction is not as much of a jump which makes sense as the only rays that are compacted away are those that hit the light source. However, both bounding box and russian roulette seem to be making a difference. I believe the reason behind bounding box would be the same reason as in the open box. For russian roulette this is most likely due to there being more rays in general due to the stream compaction not getting rid of rays, so this method would be getting ending low impact rays instead. Stream compaction and russian roulette seems to be the best combination but all of the methods together also works just as well. It is interesting to see that stream and material sort is worse than no methods at all. I imagine sorting the material may add a bit more runtime? I also assume that material sort would have a larger impact if I had more objects of different types in the scene.
 
 ## Misc cool images
 Infinity Cubes  |  Blue Skybox  |  Noir Film  |
