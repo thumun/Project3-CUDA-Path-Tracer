@@ -116,7 +116,7 @@ This performance analysis of the various methods is done with the teapot Obj wit
 ![fps](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/fps.png?raw=true)
 ![msframe](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/msperframe.png?raw=true)
 
-![chart](test
+![chart](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/Screenshot%202025-10-05%20195209.png?raw=true)
 
 In the open box scenario, stream compaction makes a dramatic difference compared to all the methods however bounding box does come close. This is most likely due to the fact that when rays don't hit any of our objects, they are stream compacted away as such there are less rays in the next iteration to compute. The bounding box is most likely a performance boost due to ignoring the rather arduous calculation of seeing if the ray intersects with one of the faces of the obj. The russian roulette and material sort methods do not have as much of an impact but are certainly better than the basic (no methods). And of course, all of the methods together result in the best FPS and lowest ms/frame for the open box. 
 
