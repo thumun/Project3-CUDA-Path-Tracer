@@ -113,8 +113,9 @@ This is a method for termininating unimportant paths, those that will have a min
 
 This performance analysis of the various methods is done with the teapot Obj with a specular material attached to it while in the cornell box. The closed box variation is simply the cornell box but with a 6th face. For the FPS chart, a higher FPS means a better method while if there are more Milliseconds taken per Frame that means that is a worse method.
 
-![fps](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/fps.png?raw=true)
-![msframe](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/msperframe.png?raw=true)
+FPS Chart  |  ms/frame Chart  |
+:-------------------------:|:-------------------------:|
+![fps](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/fps.png?raw=true) | ![msframe](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/msperframe.png?raw=true)
 
 ![chart](https://github.com/thumun/Project3-CUDA-Path-Tracer/blob/main/img/Screenshot%202025-10-05%20195209.png?raw=true)
 
